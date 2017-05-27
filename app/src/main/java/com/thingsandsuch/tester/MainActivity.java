@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity
     JSONArray posts_json = new JSONArray();
     ArrayList<Bitmap> post_previews = new ArrayList<Bitmap>();
     ArrayList<Bitmap> sub_banners = new ArrayList<Bitmap>();
-    HashMap<Integer,List<String>> hashmap_post_data;
+//    HashMap<Integer,List<String>> hashmap_post_data;
+    ArrayList<List<String>> list_post_data = new ArrayList<List<String>>();
 
     List<String> sub_titles;
     List<List<String>> sub_data = new ArrayList<List<String>>();
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity
 
 
         // list adapter setup
-        rec_adapter_posts = new RecyclerAdapter(post_previews, hashmap_post_data);
+        rec_adapter_posts = new RecyclerAdapter(post_previews, list_post_data);
         rec_view_posts.setAdapter(rec_adapter_posts);
         setup_list_listeners();
 
@@ -223,7 +224,6 @@ public class MainActivity extends AppCompatActivity
 
 
     }
-
 
 
 
@@ -345,14 +345,15 @@ public class MainActivity extends AppCompatActivity
 
     // SETUP
     private void init_default_data() {
-//        hashmap_post_data = new HashMap<>();
-        hashmap_post_data = new HashMap<Integer,List<String>>();
+//        hashmap_post_data = new HashMap<Integer,List<String>>();
+        list_post_data.clear();
 
         List<String> p_data = new ArrayList<>();
         p_data.add("title");
         p_data.add("author");
         p_data.add("hd_url");
-        hashmap_post_data.put(0,p_data);
+//        hashmap_post_data.put(0,p_data);
+        list_post_data.add(0,p_data);
 
         sub_titles = new ArrayList<String>();
 
@@ -537,7 +538,8 @@ public class MainActivity extends AppCompatActivity
 //        });
 
 
-        hashmap_post_data.clear();
+//        hashmap_post_data.clear();
+        list_post_data.clear();
         post_previews.clear();
 
 
@@ -555,6 +557,8 @@ public class MainActivity extends AppCompatActivity
 
                 post_previews.add(null);
 
+
+
                 try{
                     source_url = resolutions.getJSONObject(3).getString("url");
                 }catch (Exception e)
@@ -562,7 +566,7 @@ public class MainActivity extends AppCompatActivity
                     Log.e("NO IMAGE", "soooory");
                 }
 
-                new download_thumbnail(i).execute(source_url);
+
 
                 String hd_url;
                 try{
@@ -579,15 +583,20 @@ public class MainActivity extends AppCompatActivity
                 data_list.add(author);
                 data_list.add(hd_url);
 
-                hashmap_post_data.put(i, data_list);
+                list_post_data.add(data_list);
+//                hashmap_post_data.put(i, data_list);
 //                Log.d("POSITION_PUT",Integer.toString(num)+data_list.toString());
+
+                new download_thumbnail(num).execute(source_url);
 
                 num += 1;
 
 
             }catch (JSONException e) {
                 Log.e("POSITION_PUT", Integer.toString(num));
+                Log.e("POSITION_PUT", e.toString());
                 Log.d("FAIL", posts_json.toString());
+//                num += 1;
             }
         }
 

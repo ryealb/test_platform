@@ -29,7 +29,7 @@ import android.content.Intent;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.PreviewHolder> {
     private ArrayList<Bitmap> post_previews;
-    private HashMap<Integer,List<String>> post_data;
+    private ArrayList<List<String>> post_data;
 
     public static class PreviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView img_view_preview;
@@ -117,7 +117,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Previe
         }
     }
 
-    public RecyclerAdapter(ArrayList<Bitmap> previews, HashMap<Integer,List<String>> data) {
+    public RecyclerAdapter(ArrayList<Bitmap> previews, ArrayList<List<String>> data) {
         post_data = data;
         post_previews = previews;
     }
