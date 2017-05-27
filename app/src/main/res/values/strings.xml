@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Wulz</string>
+    <string name="testext_0">i just did it for the lulz</string>
+    <string name="sub_title">This is the Title of the sub</string>
+    <string name="main_greeting">hello</string>
+    <string name="sub_name">EarthPorn</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="login_text">Login</string>
+</resources>
