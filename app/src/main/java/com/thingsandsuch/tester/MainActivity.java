@@ -30,7 +30,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,7 +56,6 @@ import com.yalantis.ucrop.UCrop;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.Call;
@@ -120,14 +118,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
 
         instance = this; // TODO: this is bad -- definitely memory leak
 
         // toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //noinspection ConstantConditions
+        // noinspection ConstantConditions
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
@@ -156,7 +154,7 @@ public class MainActivity extends AppCompatActivity
 
 
         // list adapter setup
-        rec_adapter_posts = new RecyclerAdapter(post_previews, list_post_data);
+        rec_adapter_posts = new PostsRecyclerAdapter(post_previews, list_post_data);
         rec_view_posts.setAdapter(rec_adapter_posts);
         setup_list_listeners();
 
@@ -173,7 +171,7 @@ public class MainActivity extends AppCompatActivity
 
 
         // SUB_TITLE populate sub name spinner adapter
-        subs_adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, sub_titles);
+        subs_adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.subs_spinner_item, sub_titles);
         subs_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         populate_subs();
 
@@ -201,16 +199,23 @@ public class MainActivity extends AppCompatActivity
         // FAB
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.hide();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                load_more_posts();
+            }
+        });
+
 
 
         // search button listener setup
-        Button btn_search = (Button) findViewById(R.id.btn_search);
-        btn_search.setOnClickListener(new Button.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                search_for_sub();
-            }
-        });
+//        Button btn_search = (Button) findViewById(R.id.btn_search);
+//        btn_search.setOnClickListener(new Button.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                search_for_sub();
+//            }
+//        });
 
 
         // search edit text
@@ -390,7 +395,7 @@ public class MainActivity extends AppCompatActivity
 //                 File temp_file = save_temp_bitmap(bitmap);
 //                 Uri sourceUri = Uri.fromFile(temp_file);
 //
-//                 Intent selected_item_intent = new Intent(view.getContext(), SelectedItemActivity.class);
+//                 Intent selected_item_intent = new Intent(view.getContext(), PostActivity.class);
 //                 selected_item_intent.putExtra("title", title);
 //                 selected_item_intent.putExtra("author", author);
 //                 selected_item_intent.putExtra("hd_url", hd_url);
@@ -596,6 +601,12 @@ public class MainActivity extends AppCompatActivity
         Log.d("REFRESH SUBS", subs_obj.toString());
     }
 
+    public void load_more_posts(){
+//        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                .setAction("Action", null).show();
+
+        Log.d("LOAD MORE", "do it");
+    }
 
 
     // LOGIN
