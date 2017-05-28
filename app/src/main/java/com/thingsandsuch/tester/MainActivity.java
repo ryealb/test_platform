@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity
     JSONArray posts_json = new JSONArray();
     ArrayList<Bitmap> post_previews = new ArrayList<Bitmap>();
     ArrayList<Bitmap> sub_banners = new ArrayList<Bitmap>();
-//    HashMap<Integer,List<String>> hashmap_post_data;
     ArrayList<List<String>> list_post_data = new ArrayList<List<String>>();
 
     List<String> sub_titles;
@@ -345,14 +344,12 @@ public class MainActivity extends AppCompatActivity
 
     // SETUP
     private void init_default_data() {
-//        hashmap_post_data = new HashMap<Integer,List<String>>();
         list_post_data.clear();
 
         List<String> p_data = new ArrayList<>();
         p_data.add("title");
         p_data.add("author");
         p_data.add("hd_url");
-//        hashmap_post_data.put(0,p_data);
         list_post_data.add(0,p_data);
 
         sub_titles = new ArrayList<String>();
@@ -538,7 +535,6 @@ public class MainActivity extends AppCompatActivity
 //        });
 
 
-//        hashmap_post_data.clear();
         list_post_data.clear();
         post_previews.clear();
 
@@ -584,8 +580,6 @@ public class MainActivity extends AppCompatActivity
                 data_list.add(hd_url);
 
                 list_post_data.add(data_list);
-//                hashmap_post_data.put(i, data_list);
-//                Log.d("POSITION_PUT",Integer.toString(num)+data_list.toString());
 
                 new download_thumbnail(num).execute(source_url);
 
@@ -596,20 +590,10 @@ public class MainActivity extends AppCompatActivity
                 Log.e("POSITION_PUT", Integer.toString(num));
                 Log.e("POSITION_PUT", e.toString());
                 Log.d("FAIL", posts_json.toString());
-//                num += 1;
             }
         }
 
         Log.d("REFRESH SUBS", subs_obj.toString());
-
-//        Integer shit = hashmap_post_data.size();
-//        Log.d("hashmap_post_data", "LEN "+ shit.toString());
-
-
-//        List uhh = hashmap_post_data.get(0);
-//        Log.d("UHH", Integer.toString(uhh.size()));
-
-//        Log.d("hashmap_post_data", uhh.toString());
     }
 
 

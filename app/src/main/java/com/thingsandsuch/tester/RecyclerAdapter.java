@@ -65,11 +65,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Previe
                 Uri sourceUri = Uri.fromFile(temp_file);
 //
                 Intent selected_item_intent = new Intent(context, SelectedItemActivity.class);
+//                Intent selected_item_intent = new Intent(context, FullscreenActivity.class);
+//                Intent selected_item_intent = new Intent(context, ScrollingActivity.class);
                 selected_item_intent.putExtra("title", title);
                 selected_item_intent.putExtra("author", author);
                 selected_item_intent.putExtra("hd_url", hd_url);
                 selected_item_intent.putExtra("preview_path", sourceUri.getPath());
                 context.startActivity(selected_item_intent);
+
             }catch (NullPointerException e){
                 Log.d("CLICK","BROKE"+e.toString());
                 Log.d("CLICK", p_data.toString());
@@ -135,10 +138,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Previe
         Bitmap bmp_preview = post_previews.get(position);
         List<String> lst_data = post_data.get(position);
         holder.bind_data(bmp_preview, lst_data);
-
-//        Log.d("POSITION", Integer.toString(position));
-//        Log.d("POSITION", lst_data.toString());
-//        Log.d("POSITION", "__");
     }
 
     @Override

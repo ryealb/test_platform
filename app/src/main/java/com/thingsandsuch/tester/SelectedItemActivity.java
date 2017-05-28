@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -29,6 +30,7 @@ import java.io.OutputStream;
 
 public class SelectedItemActivity extends AppCompatActivity {
     Bitmap bitmap;
+    SwipeRefreshLayout lyt_swipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,10 @@ public class SelectedItemActivity extends AppCompatActivity {
         setContentView(R.layout.selected_item_activity);
         Intent intent = getIntent();
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+//        setDragEdge(SwipeBackLayout.DragEdge.TOP);
+
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_selected);
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -65,6 +70,19 @@ public class SelectedItemActivity extends AppCompatActivity {
              new download_wallpaper().execute(hd_url);
             }
         });
+
+
+
+        // swipe dismiss setup
+        lyt_swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_layout_selected);
+        lyt_swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d("PULL", "DO IT");
+//                refresh_current_sub_posts();
+            }
+        });
+
 
          runOnUiThread(new Runnable() {
              @Override
