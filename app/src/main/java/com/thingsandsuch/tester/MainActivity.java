@@ -360,12 +360,13 @@ public class MainActivity extends AppCompatActivity
         sub_titles = new ArrayList<String>();
 
         List<String> default_subs = new ArrayList<>();
-        default_subs.add("Futurology");
-        default_subs.add("aww");
         default_subs.add("EarthPorn");
         default_subs.add("AbandonedPorn");
-        default_subs.add("art");
         default_subs.add("ImaginaryTechnology");
+        default_subs.add("art");
+        default_subs.add("ImaginaryColorscapes");
+        default_subs.add("Futurology");
+        default_subs.add("aww");
         default_subs.add("pics");
 
         Bitmap banner = BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.logo_wbg);

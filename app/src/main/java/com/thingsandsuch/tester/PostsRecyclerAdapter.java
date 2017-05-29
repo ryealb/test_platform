@@ -63,8 +63,7 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdap
                 Uri sourceUri = Uri.fromFile(temp_file);
 //
                 Intent selected_item_intent = new Intent(context, PostActivity.class);
-//                Intent selected_item_intent = new Intent(context, FullscreenActivity.class);
-//                Intent selected_item_intent = new Intent(context, ScrollingActivity.class);
+//                Intent selected_item_intent = new Intent(context, PostActivity_two.class);
                 selected_item_intent.putExtra("title", title);
                 selected_item_intent.putExtra("author", author);
                 selected_item_intent.putExtra("hd_url", hd_url);
