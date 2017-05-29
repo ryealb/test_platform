@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -35,8 +36,8 @@ public class PostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
         setContentView(R.layout.post_activity);
@@ -46,13 +47,13 @@ public class PostActivity extends AppCompatActivity {
 
 //        setDragEdge(SwipeBackLayout.DragEdge.TOP);
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_selected);
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayShowTitleEnabled(false);
-//
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_selected);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 //        // enabling action bar app icon and behaving it as toggle button
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
 
         String title = intent.getStringExtra("title");

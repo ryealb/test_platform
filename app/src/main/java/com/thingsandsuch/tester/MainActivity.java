@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity
         instance = this; // TODO: this is bad -- definitely memory leak
 
         // toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.post_activity_toolbar);
         setSupportActionBar(toolbar);
         // noinspection ConstantConditions
         getSupportActionBar().setDisplayShowTitleEnabled(false);
