@@ -678,7 +678,7 @@ public class MainActivity extends AppCompatActivity
     // SUB_TITLE SPINNER BAR
     public void set_sub_title(){
         if (sub_data == null){
-            Log.e("SET TITLE","FAIL");
+            Log.e("TITLE_SET","sub_data == null");
         }else {
             if (sub_data.size() >= 1){
                 Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
@@ -692,7 +692,7 @@ public class MainActivity extends AppCompatActivity
                 update_sub_banner();
 
             }else {
-                Log.e("SET TITLE","FAIL");
+                Log.e("TITLE_SET","sub_data > 1");
             }
         }
     }
@@ -701,6 +701,8 @@ public class MainActivity extends AppCompatActivity
         Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
         Integer idx_spinner = spinner.getSelectedItemPosition();
         android.support.design.widget.AppBarLayout lyt_banner = (android.support.design.widget.AppBarLayout) findViewById(R.id.banner_layout);
+
+        Log.d("BANNER_SET",sub_banners.toString());
 
         if (sub_banners.size() > 0){
             Bitmap bmp_banner = sub_banners.get(idx_spinner);
@@ -883,8 +885,10 @@ public class MainActivity extends AppCompatActivity
 //                        post_previews.add(null);
 
                         if (sub_banner_url != null){
-                            Log.d("BANNER", sub_banner_url);
+                            Log.d("BANNER_GET", sub_banner_url);
                             new download_banner(i).execute(sub_banner_url);
+                        }else{
+                            Log.e("BANNER_GET", child_data.toString());
                         }
 
                     }

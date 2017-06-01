@@ -12,6 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="160dp"
         android:background="@mipmap/logo_bg"
+        android:backgroundTint="#fa000000"
+        android:backgroundTintMode="add"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <!--header-->

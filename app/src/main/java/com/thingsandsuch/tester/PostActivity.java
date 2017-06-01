@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-//import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -43,8 +41,6 @@ public class PostActivity extends AppCompatActivity {
 
         setContentView(R.layout.post_activity);
         Intent intent = getIntent();
-
-
 
 //        setDragEdge(SwipeBackLayout.DragEdge.TOP);
 
