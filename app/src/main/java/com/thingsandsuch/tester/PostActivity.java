@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+//import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -49,7 +51,7 @@ public class PostActivity extends AppCompatActivity {
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_selected);
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setDisplayShowTitleEnabled(false);
-//
+
 //        // enabling action bar app icon and behaving it as toggle button
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 //        getSupportActionBar().setHomeButtonEnabled(true);
@@ -177,10 +179,7 @@ public class PostActivity extends AppCompatActivity {
                     .withAspectRatio(7,8)
                     .start(MainActivity.instance);
 
-//            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 
-//            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//            startActivity(intent);
 
         }
     }

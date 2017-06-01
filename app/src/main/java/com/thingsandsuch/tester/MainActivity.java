@@ -1084,13 +1084,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         protected void onPostExecute(Bitmap result) {
-//            WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-//            try {
-//                wallpaperManager.setBitmap(result);
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//            }
-
             // user desktop resolution
             DisplayMetrics displayMetrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
