@@ -751,30 +751,24 @@ public class MainActivity extends AppCompatActivity
                     dt.add(sub_title);
                     sub_data.set(idx, dt);
 
+                    if (sub_banner_url.equals("null")){
+                        Log.e("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
+                    }else if (sub_banner_url.equals(null)){
+                        Log.e("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
+                    }else if (sub_banner_url.equals(" ")){
+                        Log.e("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
+                    }else if (sub_banner_url.isEmpty()){
+                        Log.e("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
+                    }else {
+                        Log.d("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
+                    }
 
-//                    if (sub_banner_url.equals("null")){
-//                        Bitmap banner = BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.logo_wbg);
-////                        sub_banners.set(idx,banner);
-//                        sub_banners.set(idx,banner);
-//                    }else if(sub_banner_url == null){
-//                        Bitmap banner = BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.logo_wbg);
-//                        sub_banners.set(idx,banner);
-//                    }else {
-//                        Log.d("BANNER_DOWNLOAD_URL", sub_banner_url);
-//                        new download_banner(idx).execute(sub_banner_url);
-//                    }
 
-//
-//                    if (sub_banner_url.equals("null")){
-                    Log.d("BANNER", sub_banner_url);
+
                     new download_banner(idx).execute(sub_banner_url);
-//                    }//else {
-//                        Bitmap banner = BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.logo);
-//                        sub_banners.set(idx,banner);
-//                    }
 
                 }catch (Exception e) {
-                    Log.e("FAIL - get_data", e.toString());
+                    Log.e("BANNER_GET_init", e.toString());
                 }
 
 
