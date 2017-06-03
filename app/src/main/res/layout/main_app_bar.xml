@@ -4,71 +4,70 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
     tools:context="com.thingsandsuch.tester.MainActivity">
+
+
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/banner_layout"
+        android:background="@mipmap/logo_bg"
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:background="@mipmap/logo_bg"
-        android:backgroundTint="#fa000000"
-        android:backgroundTintMode="add"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <!--header-->
-        <LinearLayout
-            android:id="@+id/tool_bar_layout"
+        <!--hide on scroll-->
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:orientation="vertical"
+            android:layout_height="40dp"
+            android:elevation="4dp"
             app:layout_scrollFlags="scroll|enterAlways">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1.0"
-                android:orientation="horizontal">
-
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                    <Spinner
-                        android:id="@+id/sub_spinner"
-                        android:layout_width="0dp"
-                        android:layout_height="54dp"
-                        android:spinnerMode="dropdown"
-                        android:layout_weight="0.73" />
-
-                    <!--<EditText-->
-                        <!--android:id="@+id/edit_text_sub_search"-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_weight="0.73" />-->
-
-                    <Button
-                        android:id="@+id/btn_search"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/ic_menu_search" />
-
-            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:textColor="@color/colorText"
-                android:layout_height="20dp"
+                android:layout_height="80dp"
                 android:paddingLeft="20dp"
                 android:text="@string/sub_title"
-                android:id="@+id/txt_sub_title"
-                />
+                android:id="@+id/txt_sub_title" />
 
+            <Button
+                android:id="@+id/btn_search"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_menu_search" />
+
+            <!--<EditText-->
+                <!--android:id="@+id/edit_text_sub_search"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="0.73" />-->
+
+        </android.support.v7.widget.Toolbar>
+
+
+
+        <!--always show-->
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Spinner
+                android:id="@+id/sub_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown" />
 
         </LinearLayout>
 
+
     </android.support.design.widget.AppBarLayout>
+
+
+
+
 
     <include layout="@layout/main_content"
         android:layout_width="match_parent"
@@ -90,3 +89,67 @@
 
 
 
+
+
+<!--<android.support.design.widget.AppBarLayout-->
+<!--android:id="@+id/banner_layout"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="160dp"-->
+<!--android:background="@mipmap/logo_bg"-->
+<!--android:backgroundTint="#fa000000"-->
+<!--android:backgroundTintMode="add"-->
+<!--android:theme="@style/AppTheme.AppBarOverlay">-->
+
+    <!--&lt;!&ndash;header&ndash;&gt;-->
+    <!--<LinearLayout-->
+        <!--android:id="@+id/tool_bar_layout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="160dp"-->
+        <!--android:orientation="vertical"-->
+        <!--app:layout_scrollFlags="scroll|enterAlways">-->
+    <!---->
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1.0"-->
+            <!--android:orientation="horizontal">-->
+    <!---->
+            <!--<android.support.v7.widget.Toolbar-->
+                <!--android:id="@+id/toolbar"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:elevation="4dp"/>-->
+    <!---->
+            <!--<Spinner-->
+                <!--android:id="@+id/sub_spinner"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="54dp"-->
+                <!--android:spinnerMode="dropdown"-->
+                <!--android:layout_weight="0.73" />-->
+    <!---->
+            <!--&lt;!&ndash;<EditText&ndash;&gt;-->
+            <!--&lt;!&ndash;android:id="@+id/edit_text_sub_search"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="0dp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_weight="0.73" />&ndash;&gt;-->
+    <!---->
+            <!--<Button-->
+                <!--android:id="@+id/btn_search"-->
+                <!--android:layout_width="30dp"-->
+                <!--android:layout_height="30dp"-->
+                <!--android:background="@drawable/ic_menu_search" />-->
+    <!---->
+        <!--</LinearLayout>-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:textColor="@color/colorText"-->
+            <!--android:layout_height="20dp"-->
+            <!--android:paddingLeft="20dp"-->
+            <!--android:text="@string/sub_title"-->
+            <!--android:id="@+id/txt_sub_title"-->
+            <!--/>-->
+    <!---->
+    <!--</LinearLayout>-->
+
+<!--</android.support.design.widget.AppBarLayout>-->

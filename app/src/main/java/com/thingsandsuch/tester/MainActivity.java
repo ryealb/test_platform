@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -532,13 +533,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void populate_posts_list(JSONArray subs_obj){
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                ListView list_view_posts = (ListView)findViewById(R.id.list_view_posts);
-//                list_view_posts.setSelectionAfterHeaderView();
-//            }
-//        });
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView rec_view_posts = (RecyclerView)findViewById(R.id.rec_view_posts);
+                rec_view_posts.smoothScrollToPosition(0);
+            }
+        });
 
 
         list_post_data.clear();
@@ -701,6 +702,8 @@ public class MainActivity extends AppCompatActivity
         Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
         Integer idx_spinner = spinner.getSelectedItemPosition();
         android.support.design.widget.AppBarLayout lyt_banner = (android.support.design.widget.AppBarLayout) findViewById(R.id.banner_layout);
+//        android.support.v7.widget.Toolbar lyt_banner = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+//        LinearLayout lyt_banner = (LinearLayout) findViewById(R.id.banner_layout);
 
         Log.d("BANNER_SET",sub_banners.toString());
 
