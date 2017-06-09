@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity
 
     Boolean logged_in = Boolean.FALSE;
     String user_name;
+    String sort_by = "new";
 
     JSONArray posts_json = new JSONArray();
     ArrayList<Bitmap> post_previews = new ArrayList<Bitmap>();
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity
 
         // FAB
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.hide();
+//        fab.hide();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -498,7 +499,7 @@ public class MainActivity extends AppCompatActivity
     public void get_posts_from_sub(final String sub_name){
         // basic sub data
         Request request = new Request.Builder()
-                .url("https://www.reddit.com/r/" + sub_name + "/hot.json?raw_json=1&sort=new")
+                .url("https://www.reddit.com/r/" + sub_name + "/hot.json?raw_json=1&sort=" + sort_by)
                 .build();
 
         // put internet request in android thread queue
@@ -603,12 +604,122 @@ public class MainActivity extends AppCompatActivity
         Log.d("REFRESH SUBS", subs_obj.toString());
     }
 
-    public void load_more_posts(){
-//        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                .setAction("Action", null).show();
 
-        Log.d("LOAD MORE", "do it");
+    // load more
+    public void load_more_posts(){
+        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
+        String sub_name = spinner.getSelectedItem().toString();
+
+        // basic sub data
+        Request request = new Request.Builder()
+                .url("https://www.reddit.com/r/" + sub_name + "/hot.json?raw_json=1&sort=" + sort_by)
+                .build();
+
+        // put internet request in android thread queue
+        OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("FAIL", "request fail");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                JSONObject data = null;
+                try {
+                    data = new JSONObject(json);
+                } catch (JSONException e) {
+                    Log.e("FAIL - get_data", "object");
+                }
+
+                try{
+                    Log.d("POST",data.toString());
+                    posts_json = data.getJSONObject("data").getJSONArray("children");
+                }catch (Exception e) {
+                    Log.e("FAIL - get_data", "children22");
+                }
+
+                add_to_posts_list(posts_json);
+
+            }
+        });
+
+
+
     }
+
+    public void add_to_posts_list(JSONArray subs_obj){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView rec_view_posts = (RecyclerView)findViewById(R.id.rec_view_posts);
+                rec_view_posts.smoothScrollToPosition(0);
+            }
+        });
+
+
+        list_post_data.clear();
+        post_previews.clear();
+
+
+        Integer num = 0;
+        for (int i = 0; i < posts_json.length(); i++)
+        {
+            try {
+                JSONObject preview = posts_json.getJSONObject(i).getJSONObject("data").getJSONObject("preview");
+                String author = posts_json.getJSONObject(i).getJSONObject("data").getString("author");
+                String title = posts_json.getJSONObject(i).getJSONObject("data").getString("title");
+
+                JSONObject images = preview.getJSONArray("images").getJSONObject(0);
+                String source_url = images.getJSONObject("source").getString("url");
+                JSONArray resolutions = images.getJSONArray("resolutions");
+
+                post_previews.add(null);
+
+
+
+                try{
+                    source_url = resolutions.getJSONObject(3).getString("url");
+                }catch (Exception e)
+                {
+                    Log.e("NO IMAGE", "soooory");
+                }
+
+
+
+                String hd_url;
+                try{
+//                    Integer res_count = resolutions.length();
+                    hd_url = resolutions.getJSONObject(5).getString("url");
+
+                }catch (Exception e){
+                    hd_url = source_url;
+                    Log.e("FAIL HD RES", "i dunno");
+                }
+
+                List<String> data_list = new ArrayList<>();
+                data_list.add(title);
+                data_list.add(author);
+                data_list.add(hd_url);
+
+                list_post_data.add(data_list);
+
+                new download_thumbnail(num).execute(source_url);
+
+                num += 1;
+
+
+            }catch (JSONException e) {
+                Log.e("POSITION_PUT", Integer.toString(num));
+                Log.e("POSITION_PUT", e.toString());
+                Log.d("FAIL", posts_json.toString());
+            }
+        }
+
+        Log.d("REFRESH SUBS", subs_obj.toString());
+    }
+
 
 
     // LOGIN
