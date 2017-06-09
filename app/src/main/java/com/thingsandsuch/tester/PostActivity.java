@@ -87,7 +87,7 @@ public class PostActivity extends AppCompatActivity {
 //            @Override
 //            public void onRefresh() {
 //                Log.d("PULL", "DO IT");
-////                refresh_current_sub_posts();
+////                refresh_current_sub_posts_action();
 //            }
 //        });
 
