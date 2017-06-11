@@ -9,13 +9,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.chrisbanes.photoview.PhotoView;
@@ -29,6 +33,80 @@ import java.io.OutputStream;
 public class PostActivity extends AppCompatActivity {
     Bitmap bitmap;
     SwipeRefreshLayout lyt_swipe;
+    private GestureDetectorCompat mDetector;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        this.mDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+//            Log.d(DEBUG_TAG,"onDown: " + event.toString());
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            boolean result = false;
+            try {
+                float diffY = event2.getY() - event1.getY();
+                float diffX = event2.getX() - event1.getX();
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX > 0) {
+                            onSwipeRight();
+                        } else {
+                            onSwipeLeft();
+                        }
+                    }
+                    result = true;
+                }
+                else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        onSwipeBottom();
+                    } else {
+                        onSwipeTop();
+                    }
+                }
+                result = true;
+
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            return result;
+        }
+
+        private void onSwipeRight() {
+            Log.d("SWIPE", "right");
+        }
+
+        private void onSwipeLeft() {
+            Log.d("SWIPE", "left");
+        }
+
+        private void onSwipeTop() {
+            LinearLayout lyt_title_card = (LinearLayout)findViewById(R.id.post_title_card);
+            lyt_title_card.setVisibility(View.VISIBLE);
+            Log.d("SWIPE", "up");
+        }
+
+        private void onSwipeBottom() {
+            LinearLayout lyt_title_card = (LinearLayout)findViewById(R.id.post_title_card);
+            lyt_title_card.setVisibility(View.GONE);
+
+            Log.d("SWIPE", "down");
+        }
+
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +119,12 @@ public class PostActivity extends AppCompatActivity {
 
         setContentView(R.layout.post_activity);
         Intent intent = getIntent();
+
+
+        mDetector = new GestureDetectorCompat(this, new MyGestureListener());
+
+
+
 
 //        setDragEdge(SwipeBackLayout.DragEdge.TOP);
 

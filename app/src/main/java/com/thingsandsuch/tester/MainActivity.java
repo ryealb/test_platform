@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity
         // list adapter setup
         rec_adapter_posts = new PostsRecyclerAdapter(post_previews, list_post_data);
         rec_view_posts.setAdapter(rec_adapter_posts);
-        setup_list_listeners();
+        setup_rec_list_listeners();
 
 
         // swipe refresh setup
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity
 
         // FAB
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.hide();
+        fab.hide();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -383,61 +384,27 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void setup_list_listeners(){
+    private void setup_rec_list_listeners(){
+        final RecyclerView rec_view_posts = (RecyclerView)findViewById(R.id.rec_view_posts);
 
-//        final ListView list_view_posts = (ListView)findViewById(R.id.list_view_posts);
-//        list_view_posts.setOnItemClickListener(new ListView.OnItemClickListener(){
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                 String title = post_titles.get(position);
-//                 String author = hashmap_title_author.get(title).toString();
-//                 Bitmap bitmap = post_previews.get(position);
-//                 String hd_url = hd_urls.get(position);
-//
-//                 File temp_file = save_temp_bitmap(bitmap);
-//                 Uri sourceUri = Uri.fromFile(temp_file);
-//
-//                 Intent selected_item_intent = new Intent(view.getContext(), PostActivity.class);
-//                 selected_item_intent.putExtra("title", title);
-//                 selected_item_intent.putExtra("author", author);
-//                 selected_item_intent.putExtra("hd_url", hd_url);
-//                 selected_item_intent.putExtra("preview_path", sourceUri.getPath());
-//
-//                 startActivityForResult(selected_item_intent, 0);
-//
-//            }
-//        });
-//
-//
-//        list_view_posts.setOnScrollListener(new ListView.OnScrollListener(){
-//            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//
-//            @Override
-//            public void onScrollStateChanged(AbsListView view, int scrollState) {
-//                Log.d("SCROLL", "state change");
-//            }
-//
-//            @Override
-//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//                if (firstVisibleItem == 0) {
-//                    // check if we reached the top or bottom of the list
-//                    View v = list_view_posts.getChildAt(0);
-//                    int offset = (v == null) ? 0 : v.getTop();
-//                    if (offset == 0) {
-//                        Log.d("SCROLL", "top");
-//                        }
-//                } else if (totalItemCount - visibleItemCount == firstVisibleItem){
-//                    View v = list_view_posts.getChildAt(totalItemCount-1);
-//                    int offset = (v == null) ? 0 : v.getTop();
-//                    if (offset == 0) {
-//                        Log.d("SCROLL", "bottom");
-//                        fab.show();
-//                        }
-//                }else {
-//                    fab.hide();
-//                }
-//            }
-//        });
+        ItemTouchHelper.SimpleCallback swipe_callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                int position = viewHolder.getAdapterPosition();
+                list_post_data.remove(position);
+                post_previews.remove(position);
+                rec_view_posts.getAdapter().notifyItemRemoved(position);
+            }
+        };
+        ItemTouchHelper swipe_helper = new ItemTouchHelper(swipe_callback);
+
+        swipe_helper.attachToRecyclerView(rec_view_posts);
+
 
 
     }

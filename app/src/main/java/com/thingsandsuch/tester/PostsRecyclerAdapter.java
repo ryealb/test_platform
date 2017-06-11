@@ -18,6 +18,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.widget.TextView;
 
 /**
  * Created by ryan on 5/20/2017.
@@ -25,16 +26,21 @@ import android.content.Intent;
 
 
 
-public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdapter.PreviewHolder> {
+public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<Bitmap> post_previews;
     private ArrayList<List<String>> post_data;
+
+    protected boolean showLoader;
+
+    private static final int VIEWTYPE_ITEM = 1;
+    private static final int VIEWTYPE_LOADER = 2;
+
 
     public static class PreviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView img_view_preview;
         private Bitmap p_preview;
         private List p_data;
 
-//        private static final String PHOTO_KEY = "PHOTO";
 
         public PreviewHolder(View v) {
             super(v);
@@ -80,6 +86,7 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdap
 
         }
 
+
         public File save_temp_bitmap(Context ctx, Bitmap bmp) {
             String root=ctx.getDir("my_sub_dir", Context.MODE_PRIVATE).getAbsolutePath();
             File myDir = new File(root + "/Img");
@@ -104,7 +111,6 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdap
 
 
 
-
         public void bind_data(Bitmap in_preview, List<String> data) {
             p_preview = in_preview;
             p_data = data;
@@ -117,28 +123,108 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdap
         }
     }
 
+
+
+    public static class LoaderHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView text_view;
+//        private Bitmap p_preview;
+        private List p_data;
+
+        public LoaderHolder(View v) {
+            super(v);
+            text_view = (TextView) v.findViewById(R.id.bottom_loader);
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Log.d("LOADER", "LOADER");
+        }
+
+        public void bind_data(Bitmap in_preview, List<String> data) {
+            p_data = data;
+
+        }
+    }
+
+
+
+
+
+
+
+
+
+
     public PostsRecyclerAdapter(ArrayList<Bitmap> previews, ArrayList<List<String>> data) {
         post_data = data;
         post_previews = previews;
     }
 
     @Override
-    public PostsRecyclerAdapter.PreviewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View inflatedView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.posts_recycler_item, parent, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == VIEWTYPE_LOADER) {
+            Log.d("LOADER", "load");
+
+            View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.loader_recycler_item, parent, false);
+            // Your LoaderViewHolder class
+            return new LoaderHolder(inflatedView);
+
+        }
+
+
+        View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.posts_recycler_item, parent, false);
         return new PreviewHolder(inflatedView);
     }
 
-    @Override
-    public void onBindViewHolder(PostsRecyclerAdapter.PreviewHolder holder, int position) {
 
-        Bitmap bmp_preview = post_previews.get(position);
-        List<String> lst_data = post_data.get(position);
-        holder.bind_data(bmp_preview, lst_data);
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof LoaderHolder) {
+            LoaderHolder loaderViewHolder = (LoaderHolder)holder;
+            if (showLoader) {
+                Log.d("LOADER", "show");
+//                loaderViewHolder.mProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                Log.d("LOADER", "show");
+//                loaderViewHolder.mProgressBar.setVisibility(View.GONE);
+            }
+
+            return;
+        }
+        try {
+            PreviewHolder preview_holder = (PreviewHolder)holder;
+            Bitmap bmp_preview = post_previews.get(position);
+            List<String> lst_data = post_data.get(position);
+            preview_holder.bind_data(bmp_preview, lst_data);
+
+        }catch (Exception e){
+            Log.e("PREVIEw0", "TURD");
+        }
+
+
+
     }
 
     @Override
     public int getItemCount() {
-        return post_previews.size();
+        return post_previews.size()+1;
     }
+
+    @Override
+    public int getItemViewType(int position) {
+
+        // loader can't be at position 0
+        // loader can only be at the last position
+        if (position != 0 && position == getItemCount() - 1) {
+            return VIEWTYPE_LOADER;
+        }
+
+        return VIEWTYPE_ITEM;
+    }
+
+    public void showLoading(boolean status) {
+        showLoader = status;
+    }
+
 }
