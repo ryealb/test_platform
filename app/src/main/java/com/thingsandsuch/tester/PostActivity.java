@@ -108,6 +108,8 @@ public class PostActivity extends AppCompatActivity {
 
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +141,7 @@ public class PostActivity extends AppCompatActivity {
 
         String title = intent.getStringExtra("title");
         String author = intent.getStringExtra("author");
+        String score = intent.getStringExtra("score");
         final String hd_url = intent.getStringExtra("hd_url");
 
         String preview_path = intent.getStringExtra("preview_path");
@@ -155,6 +158,11 @@ public class PostActivity extends AppCompatActivity {
 
         TextView lbl_author = (TextView) findViewById(R.id.lbl_list_item_author2);
         lbl_author.setText(author.toUpperCase());
+
+        TextView txt_score = (TextView)findViewById(R.id.txt_post_score);
+        txt_score.setText(score);
+
+//        Log.d("POST_SCORE", score);
 
         Button btn_set_wall  = (Button) findViewById(R.id.btn_set_wall);
         btn_set_wall.setOnClickListener(new Button.OnClickListener() {
@@ -185,7 +193,6 @@ public class PostActivity extends AppCompatActivity {
              }
          });
     }
-
 
 
 

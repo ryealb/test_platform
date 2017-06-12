@@ -18,6 +18,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -61,6 +62,7 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 String title = p_data.get(0).toString();
                 String author = p_data.get(1).toString();
                 String hd_url = p_data.get(2).toString();
+                String score = p_data.get(3).toString();
                 Bitmap bitmap = p_preview;
 
                 Context context = img_view_preview.getContext();
@@ -73,6 +75,7 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 selected_item_intent.putExtra("title", title);
                 selected_item_intent.putExtra("author", author);
                 selected_item_intent.putExtra("hd_url", hd_url);
+                selected_item_intent.putExtra("score", score);
                 selected_item_intent.putExtra("preview_path", sourceUri.getPath());
                 context.startActivity(selected_item_intent);
 
@@ -125,26 +128,22 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
 
-    public static class LoaderHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView text_view;
+    public static class LoaderHolder extends RecyclerView.ViewHolder {
+        private ProgressBar prog_bar;
 //        private Bitmap p_preview;
-        private List p_data;
+//        private List p_data;
 
         public LoaderHolder(View v) {
             super(v);
-            text_view = (TextView) v.findViewById(R.id.bottom_loader);
-            v.setOnClickListener(this);
+            prog_bar = (ProgressBar) v.findViewById(R.id.prog_loader);
+//            v.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-            Log.d("LOADER", "LOADER");
-        }
 
-        public void bind_data(Bitmap in_preview, List<String> data) {
-            p_data = data;
 
-        }
+//        public void bind_data(Bitmap in_preview, List<String> data) {
+//            p_data = data;
+//        }
     }
 
 
@@ -184,10 +183,10 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             LoaderHolder loaderViewHolder = (LoaderHolder)holder;
             if (showLoader) {
                 Log.d("LOADER", "show");
-//                loaderViewHolder.mProgressBar.setVisibility(View.VISIBLE);
+                loaderViewHolder.prog_bar.setVisibility(View.VISIBLE);
             } else {
                 Log.d("LOADER", "show");
-//                loaderViewHolder.mProgressBar.setVisibility(View.GONE);
+                loaderViewHolder.prog_bar.setVisibility(View.GONE);
             }
 
             return;

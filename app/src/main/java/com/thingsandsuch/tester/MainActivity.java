@@ -320,7 +320,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     // PICKUP AFTER CROP ACTION
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -357,6 +356,7 @@ public class MainActivity extends AppCompatActivity
         p_data.add("title");
         p_data.add("author");
         p_data.add("hd_url");
+        p_data.add("score");
         list_post_data.add(0,p_data);
 
         sub_titles = new ArrayList<String>();
@@ -407,6 +407,71 @@ public class MainActivity extends AppCompatActivity
 
 
 
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rec_view_posts
+                .getLayoutManager();
+
+
+        rec_view_posts.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            int ydy = 0;
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int offset = dy - ydy;
+                ydy = dy;
+
+//                boolean shouldRefresh = (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0)
+//                        && (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING) && offset > 30;
+//                if (shouldRefresh) {
+//                    Log.d("REFRESH","do");
+//                    //swipeRefreshLayout.setRefreshing(true);
+//                    //Refresh to load data here.
+//                    return;
+//                }
+//
+//                boolean shouldPullUpRefresh = linearLayoutManager.findLastCompletelyVisibleItemPosition() == linearLayoutManager.getChildCount() - 1
+//                        && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING && offset < -30;
+//
+//                if (shouldPullUpRefresh) {
+//                    Log.d("REFRESH","pull up");
+//                    //swipeRefreshLayout.setRefreshing(true);
+//                    //refresh to load data here.
+//                    return;
+//                }
+//                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+
+
+//        rec_view_posts.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                Integer item_count = rec_view_posts.getChildCount();
+//                Log.d("ITEM_COUNT", Integer.toString(item_count));
+////                totalItemCount = linearLayoutManager.getItemCount();
+////                lastVisibleItem = linearLayoutManager
+////                        .findLastVisibleItemPosition();
+////                if (!loading
+////                        && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+////                     End has been reached
+////                     Do something
+////                    if (onLoadMoreListener != null) {
+////                        onLoadMoreListener.onLoadMore();
+////                    }
+////                    loading = true;
+////                }
+//            }
+//        });
+
+
+
     }
 
     private void setup_storage_permissions(){
@@ -452,6 +517,7 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
     }
+
 
 
 
@@ -544,6 +610,12 @@ public class MainActivity extends AppCompatActivity
                 String author = subs_obj.getJSONObject(i).getJSONObject("data").getString("author");
                 String title = subs_obj.getJSONObject(i).getJSONObject("data").getString("title");
 
+                String score = subs_obj.getJSONObject(i).getJSONObject("data").getString("score");
+                String up_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("ups");
+                String down_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("downs");
+
+
+
                 JSONObject images = preview.getJSONArray("images").getJSONObject(0);
                 String source_url = images.getJSONObject("source").getString("url");
                 JSONArray resolutions = images.getJSONArray("resolutions");
@@ -575,6 +647,9 @@ public class MainActivity extends AppCompatActivity
                 data_list.add(title);
                 data_list.add(author);
                 data_list.add(hd_url);
+                data_list.add(score);
+
+                Log.d("POST_SCORE", score);
 
                 list_post_data.add(data_list);
 
@@ -701,7 +776,7 @@ public class MainActivity extends AppCompatActivity
 
             if (bmp_banner != null){
                 Drawable draw = new BitmapDrawable(getResources(), bmp_banner);
-                lyt_banner.setBackground(draw);
+//                lyt_banner.setBackground(draw);
             }
         }
 
