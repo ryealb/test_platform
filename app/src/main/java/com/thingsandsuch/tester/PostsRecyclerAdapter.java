@@ -31,7 +31,7 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     private ArrayList<Bitmap> post_previews;
     private ArrayList<List<String>> post_data;
 
-    protected boolean showLoader;
+    protected boolean showLoader = true;
 
     private static final int VIEWTYPE_ITEM = 1;
     private static final int VIEWTYPE_LOADER = 2;

@@ -32,6 +32,7 @@ import java.io.OutputStream;
 
 public class PostActivity extends AppCompatActivity {
     Bitmap bitmap;
+    Boolean card_visible = true;
     SwipeRefreshLayout lyt_swipe;
     private GestureDetectorCompat mDetector;
 
@@ -125,6 +126,7 @@ public class PostActivity extends AppCompatActivity {
 
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
+        LinearLayout lyt_card = (LinearLayout) findViewById(R.id.post_title_card);
 
 
 
@@ -172,6 +174,23 @@ public class PostActivity extends AppCompatActivity {
         });
 
 
+
+        PhotoView photoView = (PhotoView) findViewById(R.id.photo_view);
+        photoView.setOnClickListener(new PhotoView.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                LinearLayout lyt_card = (LinearLayout) findViewById(R.id.post_title_card);
+                if (card_visible){
+                    lyt_card.setVisibility(View.INVISIBLE);
+                }else{
+                    lyt_card.setVisibility(View.VISIBLE);
+                }
+
+                card_visible = lyt_card.getVisibility() == View.VISIBLE;
+
+            }
+        });
 
         // swipe dismiss setup
 //        lyt_swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_layout_selected);

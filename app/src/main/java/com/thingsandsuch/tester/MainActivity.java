@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ExploreByTouchHelper;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -98,9 +99,11 @@ public class MainActivity extends AppCompatActivity
     Integer MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1002;
 
 
+
     Boolean logged_in = Boolean.FALSE;
+    String last_post_id;
     String user_name;
-    String sort_by = "new";
+    String sort_by = "hot";
 
     JSONArray posts_json = new JSONArray();
     ArrayList<Bitmap> post_previews = new ArrayList<Bitmap>();
@@ -112,7 +115,7 @@ public class MainActivity extends AppCompatActivity
 
     private SwipeRefreshLayout lyt_refresh_swipe;
     private ArrayAdapter<String> subs_adapter;
-    private RecyclerView.Adapter rec_adapter_posts;
+    private PostsRecyclerAdapter rec_adapter_posts;
 
     public static Activity instance = null;
 
@@ -362,6 +365,7 @@ public class MainActivity extends AppCompatActivity
         sub_titles = new ArrayList<String>();
 
         List<String> default_subs = new ArrayList<>();
+        default_subs.add("All");
         default_subs.add("EarthPorn");
         default_subs.add("AbandonedPorn");
         default_subs.add("ImaginaryTechnology");
@@ -424,52 +428,36 @@ public class MainActivity extends AppCompatActivity
                 int offset = dy - ydy;
                 ydy = dy;
 
-//                boolean shouldRefresh = (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0)
-//                        && (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING) && offset > 30;
-//                if (shouldRefresh) {
-//                    Log.d("REFRESH","do");
-//                    //swipeRefreshLayout.setRefreshing(true);
-//                    //Refresh to load data here.
-//                    return;
-//                }
-//
-//                boolean shouldPullUpRefresh = linearLayoutManager.findLastCompletelyVisibleItemPosition() == linearLayoutManager.getChildCount() - 1
-//                        && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING && offset < -30;
-//
-//                if (shouldPullUpRefresh) {
-//                    Log.d("REFRESH","pull up");
-//                    //swipeRefreshLayout.setRefreshing(true);
-//                    //refresh to load data here.
-//                    return;
-//                }
+                Integer child_count = list_post_data.size();
+
+                boolean at_top = (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0);
+
+                if (at_top) {
+                    Log.d("SCROLL","show header");
+                    //hide show main header.
+                    return;
+                }
+
+
+                boolean at_bottom = linearLayoutManager.findLastCompletelyVisibleItemPosition() == child_count - 1;
+
+//                Log.d("SCROLL_offset", Integer.toString(offset));
+//                Log.d("SCROLL_last_pos", Integer.toString(linearLayoutManager.findLastCompletelyVisibleItemPosition()));
+//                Log.d("SCROLL_child_count", Integer.toString(child_count-1));
+//                Log.d("SCROLL_scroll_state", Integer.toString(recyclerView.getScrollState()));
+
+                if (at_bottom) {
+                    Log.d("SCROLL","load more");
+                    rec_adapter_posts.showLoading(true);
+                    //swipeRefreshLayout.setRefreshing(true);
+                    //refresh to load data here.
+                    load_more_posts_action();
+                    return;
+                }
+                rec_adapter_posts.showLoading(false);
 //                swipeRefreshLayout.setRefreshing(false);
             }
         });
-
-
-
-//        rec_view_posts.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//
-//                Integer item_count = rec_view_posts.getChildCount();
-//                Log.d("ITEM_COUNT", Integer.toString(item_count));
-////                totalItemCount = linearLayoutManager.getItemCount();
-////                lastVisibleItem = linearLayoutManager
-////                        .findLastVisibleItemPosition();
-////                if (!loading
-////                        && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-////                     End has been reached
-////                     Do something
-////                    if (onLoadMoreListener != null) {
-////                        onLoadMoreListener.onLoadMore();
-////                    }
-////                    loading = true;
-////                }
-//            }
-//        });
-
 
 
     }
@@ -540,9 +528,21 @@ public class MainActivity extends AppCompatActivity
 
 
     public void get_posts_from_sub(final String sub_name, final Boolean add_to_list){
+
+//        String
+//        String query = "/hot.json?limit=20&raw_json=1&sort="
+
+        String get_url = "https://www.reddit.com/r/" + sub_name + "/" + sort_by + ".json?limit=20&raw_json=1";
+
+        if (add_to_list){
+            get_url += "&after=" + last_post_id;
+            Log.d("URL",get_url);
+        }
+
+
         // basic sub data
         Request request = new Request.Builder()
-                .url("https://www.reddit.com/r/" + sub_name + "/hot.json?limit=20&raw_json=1&sort=" + sort_by)
+                .url(get_url)
                 .build();
 
         // put internet request in android thread queue
@@ -553,6 +553,8 @@ public class MainActivity extends AppCompatActivity
                 Log.e("FAIL", "request fail");
             }
 
+
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String json = response.body().string();
@@ -561,14 +563,19 @@ public class MainActivity extends AppCompatActivity
                 try {
                     data = new JSONObject(json);
                 } catch (JSONException e) {
-                    Log.e("FAIL - get_data", "object");
+                    Log.e("POST_get_data", "object");
                 }
 
                 try{
-                    Log.d("POST",data.toString());
                     posts_json_obj = data.getJSONObject("data").getJSONArray("children");
                 }catch (Exception e) {
-                    Log.e("FAIL - get_data", "children22");
+                    Log.e("POST", "children22");
+                }
+
+                try{
+                    last_post_id = posts_json_obj.getJSONObject(posts_json_obj.length()-1).getJSONObject("data").getString("name");
+                }catch (Exception e){
+                    Log.e("POST_ID", e.toString());
                 }
 
                 populate_posts_list(posts_json_obj, add_to_list);
@@ -600,9 +607,10 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
-
         Integer num = 0;
+        if (add_to_list){
+            num = post_previews.size();
+        }
         for (int i = 0; i < subs_obj.length(); i++)
         {
             try {
@@ -649,8 +657,6 @@ public class MainActivity extends AppCompatActivity
                 data_list.add(hd_url);
                 data_list.add(score);
 
-                Log.d("POST_SCORE", score);
-
                 list_post_data.add(data_list);
 
                 new download_thumbnail(num).execute(source_url);
@@ -665,8 +671,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        Log.d("POPULATE_SUBS", subs_obj.toString());
-        Log.d("POPULATE_SUBS", Integer.toString(list_post_data.size()));
+//        Log.d("POPULATE_SUBS", subs_obj.toString());
+//        Log.d("POPULATE_SUBS", Integer.toString(list_post_data.size()));
 
 
     }
