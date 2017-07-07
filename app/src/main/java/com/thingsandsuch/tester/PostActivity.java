@@ -1,5 +1,6 @@
 package com.thingsandsuch.tester;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,8 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -30,103 +33,36 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class PostActivity extends AppCompatActivity {
+public class PostActivity extends Fragment {
     Bitmap bitmap;
     Boolean card_visible = true;
     SwipeRefreshLayout lyt_swipe;
-    private GestureDetectorCompat mDetector;
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        this.mDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
-    }
-
-    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        private static final int SWIPE_THRESHOLD = 100;
-        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-
-        @Override
-        public boolean onDown(MotionEvent event) {
-//            Log.d(DEBUG_TAG,"onDown: " + event.toString());
-            return true;
-        }
-
-        @Override
-        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-            boolean result = false;
-            try {
-                float diffY = event2.getY() - event1.getY();
-                float diffX = event2.getX() - event1.getX();
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                        if (diffX > 0) {
-                            onSwipeRight();
-                        } else {
-                            onSwipeLeft();
-                        }
-                    }
-                    result = true;
-                }
-                else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (diffY > 0) {
-                        onSwipeBottom();
-                    } else {
-                        onSwipeTop();
-                    }
-                }
-                result = true;
-
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-            return result;
-        }
-
-        private void onSwipeRight() {
-            Log.d("SWIPE", "right");
-        }
-
-        private void onSwipeLeft() {
-            Log.d("SWIPE", "left");
-        }
-
-        private void onSwipeTop() {
-            LinearLayout lyt_title_card = (LinearLayout)findViewById(R.id.post_title_card);
-            lyt_title_card.setVisibility(View.VISIBLE);
-            Log.d("SWIPE", "up");
-        }
-
-        private void onSwipeBottom() {
-            LinearLayout lyt_title_card = (LinearLayout)findViewById(R.id.post_title_card);
-            lyt_title_card.setVisibility(View.GONE);
-
-            Log.d("SWIPE", "down");
-        }
-
-    }
-
-
-
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+
+
+
+        return inflater.inflate(R.layout.post_activity, container, false);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-
-        setContentView(R.layout.post_activity);
-        Intent intent = getIntent();
+        Log.d("UHH","");
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
-        mDetector = new GestureDetectorCompat(this, new MyGestureListener());
+//        setContentView(R.layout.post_activity);
+//        Intent intent = getIntent();
 
-        LinearLayout lyt_card = (LinearLayout) findViewById(R.id.post_title_card);
+
+
+//        LinearLayout lyt_card = (LinearLayout) findViewById(R.id.post_title_card);
 
 
 
@@ -141,56 +77,56 @@ public class PostActivity extends AppCompatActivity {
 //        getSupportActionBar().setHomeButtonEnabled(true);
 
 
-        String title = intent.getStringExtra("title");
-        String author = intent.getStringExtra("author");
-        String score = intent.getStringExtra("score");
-        final String hd_url = intent.getStringExtra("hd_url");
-
-        String preview_path = intent.getStringExtra("preview_path");
-        Log.d("PATH", preview_path);
-        File image_file = new  File(preview_path);
-
-        if(image_file.exists()){
-            Log.d("FILE", "EXISTS");
-            bitmap = BitmapFactory.decodeFile(image_file.getAbsolutePath());
-        }
-
-        TextView lbl_title = (TextView) findViewById(R.id.lbl_list_item_title2);
-        lbl_title.setText(title);
-
-        TextView lbl_author = (TextView) findViewById(R.id.lbl_list_item_author2);
-        lbl_author.setText(author.toUpperCase());
-
-        TextView txt_score = (TextView)findViewById(R.id.txt_post_score);
-        txt_score.setText(score);
+//        String title = intent.getStringExtra("title");
+//        String author = intent.getStringExtra("author");
+//        String score = intent.getStringExtra("score");
+//        final String hd_url = intent.getStringExtra("hd_url");
+//
+//        String preview_path = intent.getStringExtra("preview_path");
+//        Log.d("PATH", preview_path);
+//        File image_file = new  File(preview_path);
+//
+//        if(image_file.exists()){
+//            Log.d("FILE", "EXISTS");
+//            bitmap = BitmapFactory.decodeFile(image_file.getAbsolutePath());
+//        }
+//
+//        TextView lbl_title = (TextView) findViewById(R.id.lbl_list_item_title2);
+//        lbl_title.setText(title);
+//
+//        TextView lbl_author = (TextView) findViewById(R.id.lbl_list_item_author2);
+//        lbl_author.setText(author.toUpperCase());
+//
+//        TextView txt_score = (TextView)findViewById(R.id.txt_post_score);
+//        txt_score.setText(score);
 
 //        Log.d("POST_SCORE", score);
 
-        Button btn_set_wall  = (Button) findViewById(R.id.btn_set_wall);
-        btn_set_wall.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-             new download_wallpaper().execute(hd_url);
-            }
-        });
+//        Button btn_set_wall  = (Button) findViewById(R.id.btn_set_wall);
+//        btn_set_wall.setOnClickListener(new Button.OnClickListener() {
+//            public void onClick(View v) {
+//             new download_wallpaper().execute(hd_url);
+//            }
+//        });
 
 
 
-        PhotoView photoView = (PhotoView) findViewById(R.id.photo_view);
-        photoView.setOnClickListener(new PhotoView.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                LinearLayout lyt_card = (LinearLayout) findViewById(R.id.post_title_card);
-                if (card_visible){
-                    lyt_card.setVisibility(View.INVISIBLE);
-                }else{
-                    lyt_card.setVisibility(View.VISIBLE);
-                }
-
-                card_visible = lyt_card.getVisibility() == View.VISIBLE;
-
-            }
-        });
+//        PhotoView photoView = (PhotoView) findViewById(R.id.photo_view);
+//        photoView.setOnClickListener(new PhotoView.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View view) {
+//                LinearLayout lyt_card = (LinearLayout) findViewById(R.id.post_title_card);
+//                if (card_visible){
+//                    lyt_card.setVisibility(View.INVISIBLE);
+//                }else{
+//                    lyt_card.setVisibility(View.VISIBLE);
+//                }
+//
+//                card_visible = lyt_card.getVisibility() == View.VISIBLE;
+//
+//            }
+//        });
 
         // swipe dismiss setup
 //        lyt_swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_layout_selected);
@@ -202,25 +138,25 @@ public class PostActivity extends AppCompatActivity {
 //            }
 //        });
 
-
-         runOnUiThread(new Runnable() {
-             @Override
-             public void run() {
-                 PhotoView photoView = (PhotoView) findViewById(R.id.photo_view);
-                 photoView.setImageBitmap(bitmap);
-                 Log.d("BITMAP", bitmap.toString());
-             }
-         });
+//
+//         runOnUiThread(new Runnable() {
+//             @Override
+//             public void run() {
+//                 PhotoView photoView = (PhotoView) findViewById(R.id.photo_view);
+//                 photoView.setImageBitmap(bitmap);
+//                 Log.d("BITMAP", bitmap.toString());
+//             }
+//         });
     }
 
 
 
     public File save_temp_bitmap(Bitmap bmp) {
-        String root=getApplicationContext().getDir("my_sub_dir", Context.MODE_PRIVATE).getAbsolutePath();
-        File myDir = new File(root + "/Img");
-        if(!myDir.exists()){
-            myDir.mkdirs();
-        }
+//        String root=getApplicationContext().getDir("my_sub_dir", Context.MODE_PRIVATE).getAbsolutePath();
+//        File myDir = new File(root + "/Img");
+//        if(!myDir.exists()){
+//            myDir.mkdirs();
+//        }
 
         String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
         Log.d("FILE",extStorageDirectory);
@@ -257,7 +193,7 @@ public class PostActivity extends AppCompatActivity {
         protected void onPostExecute(Bitmap result) {
             // user desktop resolution
             DisplayMetrics displayMetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             int width = displayMetrics.widthPixels;
             int height = displayMetrics.heightPixels;
 
@@ -269,7 +205,7 @@ public class PostActivity extends AppCompatActivity {
 
             File temp_file = save_temp_bitmap(result);
             Uri sourceUri = Uri.fromFile(temp_file);
-            Uri destinationUri = Uri.fromFile(new File(getApplicationContext().getCacheDir(), "IMG_" + System.currentTimeMillis()));
+//            Uri destinationUri = Uri.fromFile(new File(getApplicationContext().getCacheDir(), "IMG_" + System.currentTimeMillis()));
 
             UCrop.Options options = new UCrop.Options();
             options.setCompressionQuality(100);
@@ -280,10 +216,10 @@ public class PostActivity extends AppCompatActivity {
             options.setActiveWidgetColor(ContextCompat.getColor(MainActivity.instance, R.color.colorPrimaryDark));
             options.setStatusBarColor(ContextCompat.getColor(MainActivity.instance, R.color.colorPrimaryDark));
             options.setFreeStyleCropEnabled(true);
-            UCrop.of(sourceUri, destinationUri)
-                    .withOptions(options)
-                    .withAspectRatio(7,8)
-                    .start(MainActivity.instance);
+//            UCrop.of(sourceUri, destinationUri)
+//                    .withOptions(options)
+//                    .withAspectRatio(7,8)
+//                    .start(MainActivity.instance);
 
 
 

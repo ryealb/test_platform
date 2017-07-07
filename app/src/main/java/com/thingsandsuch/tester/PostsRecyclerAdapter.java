@@ -3,6 +3,9 @@ package com.thingsandsuch.tester;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,9 +54,6 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         @Override
         public void onClick(View v) {
-
-
-
 //            Context context = itemView.getContext();
 //            Intent showPhotoIntent = new Intent(context, PhotoActivity.class);
 //            showPhotoIntent.putExtra(PHOTO_KEY, mPhoto);
@@ -69,15 +69,22 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                 File temp_file = save_temp_bitmap(context, bitmap);
                 Uri sourceUri = Uri.fromFile(temp_file);
-//
-                Intent selected_item_intent = new Intent(context, PostActivity.class);
-//                Intent selected_item_intent = new Intent(context, PostActivity_two.class);
-                selected_item_intent.putExtra("title", title);
-                selected_item_intent.putExtra("author", author);
-                selected_item_intent.putExtra("hd_url", hd_url);
-                selected_item_intent.putExtra("score", score);
-                selected_item_intent.putExtra("preview_path", sourceUri.getPath());
-                context.startActivity(selected_item_intent);
+
+
+//                Intent selected_item_intent = new Intent(context, PostActivity.class);
+//                selected_item_intent.putExtra("title", title);
+//                selected_item_intent.putExtra("author", author);
+//                selected_item_intent.putExtra("hd_url", hd_url);
+//                selected_item_intent.putExtra("score", score);
+//                selected_item_intent.putExtra("preview_path", sourceUri.getPath());
+//                context.startActivity(selected_item_intent);
+
+                try {
+                    ((MainActivity) v.getContext()).run_the_thing();
+                } catch (Exception e) {
+                    // ignore
+                }
+
 
             }catch (NullPointerException e){
                 Log.d("CLICK","BROKE"+e.toString());

@@ -3,6 +3,8 @@ package com.thingsandsuch.tester;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +20,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.ExploreByTouchHelper;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -29,6 +32,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -75,8 +79,8 @@ import okhttp3.Response;
 
 
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends FragmentActivity
+implements NavigationView.OnNavigationItemSelectedListener{
 
     // path variables to connect to internets
     // verification code
@@ -129,9 +133,9 @@ public class MainActivity extends AppCompatActivity
 
         // toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
         // noinspection ConstantConditions
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
         // drawer actions
@@ -162,7 +166,6 @@ public class MainActivity extends AppCompatActivity
         rec_adapter_posts = new PostsRecyclerAdapter(post_previews, list_post_data);
         rec_view_posts.setAdapter(rec_adapter_posts);
         setup_rec_list_listeners();
-
 
         // swipe refresh setup
         lyt_refresh_swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout_posts);
@@ -388,6 +391,35 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void setup_storage_permissions(){
+
+        // check for permission WRITE_EXTERNAL_STORAGE
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+            }
+        }
+
+
+
+    }
+
+
+
+    // LISTENERS
     private void setup_rec_list_listeners(){
         final RecyclerView rec_view_posts = (RecyclerView)findViewById(R.id.rec_view_posts);
 
@@ -410,11 +442,7 @@ public class MainActivity extends AppCompatActivity
         swipe_helper.attachToRecyclerView(rec_view_posts);
 
 
-
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rec_view_posts
-                .getLayoutManager();
-
-
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rec_view_posts.getLayoutManager();
         rec_view_posts.addOnScrollListener(new RecyclerView.OnScrollListener() {
             int ydy = 0;
             @Override
@@ -462,31 +490,26 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void setup_storage_permissions(){
+    public void run_the_thing(){
+        Log.d("CLICK_RNU", "RUNNNN");
 
-        // check for permission WRITE_EXTERNAL_STORAGE
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        PostActivity fragment = new PostActivity();
+        fragmentTransaction.replace(R.id.fragment_place, fragment);
+//        fragmentTransaction.add(R.id.fragment_place, fragment);
+        fragmentTransaction.commit();
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-            }
-        }
-
-
+//        Intent selected_item_intent = new Intent(context, PostActivity.class);
+//        selected_item_intent.putExtra("title", title);
+//        selected_item_intent.putExtra("author", author);
+//        selected_item_intent.putExtra("hd_url", hd_url);
+//        selected_item_intent.putExtra("score", score);
+//        selected_item_intent.putExtra("preview_path", sourceUri.getPath());
+//        context.startActivity(selected_item_intent);
 
     }
+
 
 
 
