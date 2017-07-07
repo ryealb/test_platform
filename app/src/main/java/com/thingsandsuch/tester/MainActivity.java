@@ -496,9 +496,13 @@ implements NavigationView.OnNavigationItemSelectedListener{
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         PostActivity fragment = new PostActivity();
-        fragmentTransaction.replace(R.id.fragment_place, fragment);
+
+//        fragmentTransaction.replace(R.id.content, fragment);
+//        fragmentTransaction.addToBackStack(null);
+
+//        fragmentTransaction.replace(R.id.fragment_place, fragment);
 //        fragmentTransaction.add(R.id.fragment_place, fragment);
-        fragmentTransaction.commit();
+//        fragmentTransaction.commit();
 
 //        Intent selected_item_intent = new Intent(context, PostActivity.class);
 //        selected_item_intent.putExtra("title", title);
