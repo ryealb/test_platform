@@ -3,9 +3,6 @@ package com.thingsandsuch.tester;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,9 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.content.Intent;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 /**
  * Created by ryan on 5/20/2017.
@@ -64,36 +59,18 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 String hd_url = p_data.get(2).toString();
                 String score = p_data.get(3).toString();
                 Bitmap bitmap = p_preview;
-
                 Context context = img_view_preview.getContext();
 
                 File temp_file = save_temp_bitmap(context, bitmap);
                 Uri sourceUri = Uri.fromFile(temp_file);
 
-
-//                Intent selected_item_intent = new Intent(context, PostActivity.class);
-//                selected_item_intent.putExtra("title", title);
-//                selected_item_intent.putExtra("author", author);
-//                selected_item_intent.putExtra("hd_url", hd_url);
-//                selected_item_intent.putExtra("score", score);
-//                selected_item_intent.putExtra("preview_path", sourceUri.getPath());
-//                context.startActivity(selected_item_intent);
-
-                try {
-                    ((MainActivity) v.getContext()).run_the_thing();
-                } catch (Exception e) {
-                    // ignore
-                }
-
+                ((MainActivity) v.getContext()).run_post_fragment(title, author, hd_url, score, sourceUri.getPath());
 
             }catch (NullPointerException e){
                 Log.d("CLICK","BROKE"+e.toString());
                 Log.d("CLICK", p_data.toString());
 
             }
-
-
-
         }
 
 

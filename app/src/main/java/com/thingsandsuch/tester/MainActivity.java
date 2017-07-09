@@ -1,91 +1,80 @@
 package com.thingsandsuch.tester;
 
+import com.yalantis.ucrop.UCrop;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.WallpaperManager;
-import android.content.Context;
+import android.app.FragmentTransaction;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
+
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
+
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ExploreByTouchHelper;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Base64;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.FloatingActionButton;
+
+import android.util.Log;
+import android.os.Bundle;
+import android.util.Base64;
+
+import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.widget.Toast;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
-import com.yalantis.ucrop.UCrop;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
+import java.io.IOException;
+
+import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.design.widget.NavigationView;
+
+
 import java.util.List;
+import java.util.ArrayList;
 
 import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.Callback;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
-
-
-
-//TODO: scroll to top before resetting data
+import okhttp3.OkHttpClient;
 
 
 
 
-public class MainActivity extends FragmentActivity
+public class MainActivity extends AppCompatActivity
 implements NavigationView.OnNavigationItemSelectedListener{
 
     // path variables to connect to internets
     // verification code
     private static final String STATE = "WULZ_APP_LOGIN";
-    // registerd reddit app id
+    // registered reddit app id
     private static final String CLIENT_ID = "_8KdmArtAKAhrA";
     // fake url that ?intent goes to after ?completed - url set as intent catcher thing in manifest
     private static final String REDIRECT_URI = "http://www.wulz.com/my_redirect";
@@ -93,7 +82,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
     private static final String ACCESS_TOKEN_URL = "https://www.reddit.com/api/v1/access_token";
     // login page url
     private static final String AUTH_URL =
-            "https://www.reddit.com/api/v1/authorize.compact?client_id=%s" +
+                    "https://www.reddit.com/api/v1/authorize.compact?client_id=%s" +
                     "&response_type=code&state=%s&redirect_uri=%s&" +
                     "duration=permanent&scope=identity mysubreddits";
 
@@ -103,25 +92,19 @@ implements NavigationView.OnNavigationItemSelectedListener{
     Integer MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1002;
 
 
-
-    Boolean logged_in = Boolean.FALSE;
-    String last_post_id;
     String user_name;
-    String sort_by = "hot";
-
-    JSONArray posts_json = new JSONArray();
-    ArrayList<Bitmap> post_previews = new ArrayList<Bitmap>();
-    ArrayList<Bitmap> sub_banners = new ArrayList<Bitmap>();
-    ArrayList<List<String>> list_post_data = new ArrayList<List<String>>();
+    Boolean logged_in = Boolean.FALSE;
 
     List<String> sub_titles;
+    ArrayList<Bitmap> sub_banners = new ArrayList<Bitmap>();
     List<List<String>> sub_data = new ArrayList<List<String>>();
 
-    private SwipeRefreshLayout lyt_refresh_swipe;
+    public PostFragment frag_post;
+    public RecyclerFragment frag_recycler;
     private ArrayAdapter<String> subs_adapter;
-    private PostsRecyclerAdapter rec_adapter_posts;
 
     public static Activity instance = null;
+
 
 
     @Override
@@ -133,9 +116,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
         // toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
         // noinspection ConstantConditions
-//        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
         // drawer actions
@@ -152,29 +135,16 @@ implements NavigationView.OnNavigationItemSelectedListener{
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        // setup main fragment
+        frag_recycler = new RecyclerFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, frag_recycler);
+        fragmentTransaction.commit();
+
+
         // default data
         init_default_data();
-
-
-        // list setup
-        RecyclerView rec_view_posts = (RecyclerView) findViewById(R.id.rec_view_posts );
-        LinearLayoutManager lin_lyt_manager = new LinearLayoutManager(this);
-        rec_view_posts.setLayoutManager(lin_lyt_manager);
-
-
-        // list adapter setup
-        rec_adapter_posts = new PostsRecyclerAdapter(post_previews, list_post_data);
-        rec_view_posts.setAdapter(rec_adapter_posts);
-        setup_rec_list_listeners();
-
-        // swipe refresh setup
-        lyt_refresh_swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout_posts);
-        lyt_refresh_swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refresh_current_sub_posts_action();
-                }
-            });
 
 
 
@@ -193,7 +163,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
                 set_sub_title();
-                get_posts_from_sub_action(spinner.getSelectedItem().toString());
+                frag_recycler.to_fragment_sub_title(spinner.getSelectedItem().toString());
+                frag_recycler.to_fragment_get_posts_from_sub_action();
             }
 
             @Override
@@ -210,7 +181,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                load_more_posts_action();
+//                load_more_posts_action();
             }
         });
 
@@ -231,9 +202,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
 //        edit_text_sub_search.setVisibility(View.INVISIBLE);
 
 
+
         // check & get permissions to WRITE_EXTERNAL_STORAGE
         setup_storage_permissions();
-
 
     }
 
@@ -265,7 +236,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
         //noinspection SimplifiableIfStatement
 //        if (id == R.id.action_refresh) {
-//            populate_posts_list(posts_json);
 //            return true;
 //        }
 
@@ -289,8 +259,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
 
-    // PICKUP AFTER LOGIN INTENT
-    @Override
+
+    // RESUME
+    @Override // pickup after login intent
     protected void onResume() {
         // pickup on intent passed from android - tell android to run it in manifest
 
@@ -326,8 +297,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
         }
     }
 
-    // PICKUP AFTER CROP ACTION
-    @Override
+    @Override // pickup after crop action
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             final Uri resultUri = UCrop.getOutput(data);
@@ -354,17 +324,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
 
+
     // SETUP
     private void init_default_data() {
-        list_post_data.clear();
-
-        List<String> p_data = new ArrayList<>();
-        p_data.add("title");
-        p_data.add("author");
-        p_data.add("hd_url");
-        p_data.add("score");
-        list_post_data.add(0,p_data);
-
         sub_titles = new ArrayList<String>();
 
         List<String> default_subs = new ArrayList<>();
@@ -388,6 +350,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
             sub_banners.add(i,banner);
             get_sub_data_for_title(i,name);
         }
+
 
     }
 
@@ -416,294 +379,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
     }
-
-
-
-    // LISTENERS
-    private void setup_rec_list_listeners(){
-        final RecyclerView rec_view_posts = (RecyclerView)findViewById(R.id.rec_view_posts);
-
-        ItemTouchHelper.SimpleCallback swipe_callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder viewHolder1) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                int position = viewHolder.getAdapterPosition();
-                list_post_data.remove(position);
-                post_previews.remove(position);
-                rec_view_posts.getAdapter().notifyItemRemoved(position);
-            }
-        };
-        ItemTouchHelper swipe_helper = new ItemTouchHelper(swipe_callback);
-
-        swipe_helper.attachToRecyclerView(rec_view_posts);
-
-
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rec_view_posts.getLayoutManager();
-        rec_view_posts.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int ydy = 0;
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int offset = dy - ydy;
-                ydy = dy;
-
-                Integer child_count = list_post_data.size();
-
-                boolean at_top = (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0);
-
-                if (at_top) {
-                    Log.d("SCROLL","show header");
-                    //hide show main header.
-                    return;
-                }
-
-
-                boolean at_bottom = linearLayoutManager.findLastCompletelyVisibleItemPosition() == child_count - 1;
-
-//                Log.d("SCROLL_offset", Integer.toString(offset));
-//                Log.d("SCROLL_last_pos", Integer.toString(linearLayoutManager.findLastCompletelyVisibleItemPosition()));
-//                Log.d("SCROLL_child_count", Integer.toString(child_count-1));
-//                Log.d("SCROLL_scroll_state", Integer.toString(recyclerView.getScrollState()));
-
-                if (at_bottom) {
-                    Log.d("SCROLL","load more");
-                    rec_adapter_posts.showLoading(true);
-                    //swipeRefreshLayout.setRefreshing(true);
-                    //refresh to load data here.
-                    load_more_posts_action();
-                    return;
-                }
-                rec_adapter_posts.showLoading(false);
-//                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
-
-
-    }
-
-    public void run_the_thing(){
-        Log.d("CLICK_RNU", "RUNNNN");
-
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        PostActivity fragment = new PostActivity();
-
-//        fragmentTransaction.replace(R.id.content, fragment);
-//        fragmentTransaction.addToBackStack(null);
-
-//        fragmentTransaction.replace(R.id.fragment_place, fragment);
-//        fragmentTransaction.add(R.id.fragment_place, fragment);
-//        fragmentTransaction.commit();
-
-//        Intent selected_item_intent = new Intent(context, PostActivity.class);
-//        selected_item_intent.putExtra("title", title);
-//        selected_item_intent.putExtra("author", author);
-//        selected_item_intent.putExtra("hd_url", hd_url);
-//        selected_item_intent.putExtra("score", score);
-//        selected_item_intent.putExtra("preview_path", sourceUri.getPath());
-//        context.startActivity(selected_item_intent);
-
-    }
-
-
-
-
-    // SEARCH
-    private void search_for_sub(){
-        Log.d("SEARCH", "search");
-
-//        runOnUiThread(new Runnable() {
-//            Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-////            EditText edit_text_sub_search = (EditText) findViewById(R.id.edit_text_sub_search);
-//
-//            @Override
-//            public void run() {
-//                spinner.setVisibility(View.INVISIBLE);
-////                edit_text_sub_search.setVisibility(View.VISIBLE);
-//            }
-//        });
-    }
-
-
-
-
-    // POSTS
-    public void refresh_current_sub_posts_action(){
-        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-        get_posts_from_sub_action(spinner.getSelectedItem().toString());
-        lyt_refresh_swipe.setRefreshing(false);
-    }
-
-    public void get_posts_from_sub_action(final String sub_name){
-        get_posts_from_sub(sub_name, false);
-    }
-
-    public void load_more_posts_action(){
-        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-        String sub_name = spinner.getSelectedItem().toString();
-        get_posts_from_sub(sub_name, true);
-    }
-
-
-    public void get_posts_from_sub(final String sub_name, final Boolean add_to_list){
-
-//        String
-//        String query = "/hot.json?limit=20&raw_json=1&sort="
-
-        String get_url = "https://www.reddit.com/r/" + sub_name + "/" + sort_by + ".json?limit=20&raw_json=1";
-
-        if (add_to_list){
-            get_url += "&after=" + last_post_id;
-            Log.d("URL",get_url);
-        }
-
-
-        // basic sub data
-        Request request = new Request.Builder()
-                .url(get_url)
-                .build();
-
-        // put internet request in android thread queue
-        OkHttpClient client = new OkHttpClient();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("FAIL", "request fail");
-            }
-
-
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String json = response.body().string();
-                JSONObject data = null;
-                JSONArray posts_json_obj = null;
-                try {
-                    data = new JSONObject(json);
-                } catch (JSONException e) {
-                    Log.e("POST_get_data", "object");
-                }
-
-                try{
-                    posts_json_obj = data.getJSONObject("data").getJSONArray("children");
-                }catch (Exception e) {
-                    Log.e("POST", "children22");
-                }
-
-                try{
-                    last_post_id = posts_json_obj.getJSONObject(posts_json_obj.length()-1).getJSONObject("data").getString("name");
-                }catch (Exception e){
-                    Log.e("POST_ID", e.toString());
-                }
-
-                populate_posts_list(posts_json_obj, add_to_list);
-
-            }
-        });
-    }
-
-    public void populate_posts_list(JSONArray subs_obj, Boolean add_to_list){
-
-        if (!add_to_list){
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    RecyclerView rec_view_posts = (RecyclerView)findViewById(R.id.rec_view_posts);
-                    rec_view_posts.smoothScrollToPosition(0);
-                }
-            });
-
-            list_post_data.clear();
-            post_previews.clear();
-
-        }
-
-
-        Integer posts_count = subs_obj.length();
-        Log.d("POPULATE_SUBS_obj_cnt", Integer.toString(posts_count));
-
-
-
-        Integer num = 0;
-        if (add_to_list){
-            num = post_previews.size();
-        }
-        for (int i = 0; i < subs_obj.length(); i++)
-        {
-            try {
-                JSONObject preview = subs_obj.getJSONObject(i).getJSONObject("data").getJSONObject("preview");
-                String author = subs_obj.getJSONObject(i).getJSONObject("data").getString("author");
-                String title = subs_obj.getJSONObject(i).getJSONObject("data").getString("title");
-
-                String score = subs_obj.getJSONObject(i).getJSONObject("data").getString("score");
-                String up_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("ups");
-                String down_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("downs");
-
-
-
-                JSONObject images = preview.getJSONArray("images").getJSONObject(0);
-                String source_url = images.getJSONObject("source").getString("url");
-                JSONArray resolutions = images.getJSONArray("resolutions");
-
-                post_previews.add(null);
-
-
-
-                try{
-                    source_url = resolutions.getJSONObject(3).getString("url");
-                }catch (Exception e)
-                {
-                    Log.e("NO IMAGE", "soooory");
-                }
-
-
-
-                String hd_url;
-                try{
-//                    Integer res_count = resolutions.length();
-                    hd_url = resolutions.getJSONObject(5).getString("url");
-
-                }catch (Exception e){
-                    hd_url = source_url;
-                    Log.e("FAIL HD RES", "i dunno");
-                }
-
-                List<String> data_list = new ArrayList<>();
-                data_list.add(title);
-                data_list.add(author);
-                data_list.add(hd_url);
-                data_list.add(score);
-
-                list_post_data.add(data_list);
-
-                new download_thumbnail(num).execute(source_url);
-
-                num += 1;
-
-
-            }catch (JSONException e) {
-                Log.e("POSITION_PUT", Integer.toString(num));
-                Log.e("POSITION_PUT", e.toString());
-                Log.d("FAIL", subs_obj.toString());
-            }
-        }
-
-//        Log.d("POPULATE_SUBS", subs_obj.toString());
-//        Log.d("POPULATE_SUBS", Integer.toString(list_post_data.size()));
-
-
-    }
-
 
 
 
@@ -770,6 +445,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
     }
+
 
 
 
@@ -891,8 +567,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
 
-
-
     // USER DATA PULL
     public void get_user_name(String access_token) throws IOException {
         Request request = new Request.Builder()
@@ -1005,9 +679,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
                         subs_adapter.notifyDataSetChanged();
 
-                        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-                        get_posts_from_sub_action(spinner.getSelectedItem().toString());
                         set_sub_title();
+                        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
+                        frag_recycler.get_posts_from_sub_action(spinner.getSelectedItem().toString());
 
                     }
                 });
@@ -1019,7 +693,29 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
 
-    // DOWNLOAD IMAGES
+
+    // FRAGMENT
+    public void run_post_fragment(String title, String author, String hd_url, String score, String preview_path){
+
+        Bundle bundle = new Bundle();
+        bundle.putString("title", title);
+        bundle.putString("author", author);
+        bundle.putString("hd_url", hd_url);
+        bundle.putString("score", score);
+        bundle.putString("preview_path", preview_path);
+
+        frag_post = new PostFragment();
+        frag_post.setArguments(bundle);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, frag_post);
+        fragmentTransaction.addToBackStack("");
+        fragmentTransaction.commit();
+
+    }
+
+    // DOWNLOAD
     private class download_banner extends AsyncTask<String, Void, Bitmap> {
         Integer banner_index;
 
@@ -1064,160 +760,433 @@ implements NavigationView.OnNavigationItemSelectedListener{
         }
     }
 
-    private class download_thumbnail extends AsyncTask<String, Void, Bitmap> {
-        Integer preview_index;
+    // SEARCH
+    private void search_for_sub(){
+        Log.d("SEARCH", "search");
 
-        public download_thumbnail(Integer preview_index) {
-            this.preview_index = preview_index;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String image_url = urls[0];
-            Bitmap bimage = null;
-            try {
-                InputStream in = new java.net.URL(image_url).openStream();
-                bimage = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("DOWNLOAD THUMB", e.getMessage());
-            }
-            return bimage;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            Log.d("PREVIEW_IDX", this.preview_index.toString()+post_previews.toString());
-            post_previews.set(this.preview_index, result);
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    rec_adapter_posts.notifyDataSetChanged();
-
-                }
-            });
-
-
-        }
-    }
-
-
-
-
-    // moved this to other activity
-    public File save_temp_bitmap(Bitmap bmp) {
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
-//        String imageFileName = "PNG_" + timeStamp + "_.png";
-//        File mFileTemp = null;
-
-
-        String root=getApplicationContext().getDir("my_sub_dir", Context.MODE_PRIVATE).getAbsolutePath();
-        File myDir = new File(root + "/Img");
-        if(!myDir.exists()){
-            myDir.mkdirs();
-        }
-
-//        Bitmap bbicon;
-//        bbicon=BitmapFactory.decodeResource(getResources(),R.drawable.logo);
-        //ByteArrayOutputStream baosicon = new ByteArrayOutputStream();
-        //bbicon.compress(Bitmap.CompressFormat.PNG,0, baosicon);
-        //bicon=baosicon.toByteArray();
-
-        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-        Log.d("FILE",extStorageDirectory);
-        OutputStream outStream = null;
-        File file = new File(extStorageDirectory, "er.PNG");
-        try {
-            outStream = new FileOutputStream(file);
-//            bbicon.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-            outStream.flush();
-            outStream.close();
-        } catch(Exception e) {
-            Log.e("WRITE","FAIL");
-            e.printStackTrace();
-        }
-
-//        try {
-//            mFileTemp=File.createTempFile(imageFileName,".png",myDir.getAbsoluteFile());
-//        } catch (IOException e1) {
-//            e1.printStackTrace();
-//        }
-
-//        File mFileTemp = new File(imageFileName);
-//        FileOutputStream out = null;
-//        try {
-//            out = new FileOutputStream(mFileTemp);
-//            bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-//            // PNG is a lossless format, the compression factor (100) is ignored
-//        } catch (Exception e) {
-//            Log.e("WRITE","FAIL");
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                if (out != null) {
-//                    out.close();
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
+//        runOnUiThread(new Runnable() {
+//            Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
+////            EditText edit_text_sub_search = (EditText) findViewById(R.id.edit_text_sub_search);
+//
+//            @Override
+//            public void run() {
+//                spinner.setVisibility(View.INVISIBLE);
+////                edit_text_sub_search.setVisibility(View.VISIBLE);
 //            }
-//        }
-
-
-
-        return file;
-    }
-
-    public class download_wallpaper extends AsyncTask<String, Void, Bitmap> {
-        protected Bitmap doInBackground(String... urls) {
-            String image_url = urls[0];
-            Bitmap bimage = null;
-            try {
-                InputStream in = new java.net.URL(image_url).openStream();
-                bimage = BitmapFactory.decodeStream(in);
-
-            } catch (Exception e) {
-                Log.e("Error Message", e.getMessage());
-                e.printStackTrace();
-            }
-            return bimage;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            // user desktop resolution
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            int width = displayMetrics.widthPixels;
-            int height = displayMetrics.heightPixels;
-
-            int ratio = width / height;
-            Log.d("","");
-            Log.d("WIDTH", Integer.toString(width)); // 1440
-            Log.d("HEIGHT", Integer.toString(height)); // 2392
-            Log.d("","");
-
-
-            File temp_file = save_temp_bitmap(result);
-            Uri sourceUri = Uri.fromFile(temp_file);
-            Uri destinationUri = Uri.fromFile(new File(getApplicationContext().getCacheDir(), "IMG_" + System.currentTimeMillis()));
-
-            UCrop.Options options = new UCrop.Options();
-            options.setCompressionQuality(100);
-            options.setCompressionFormat(Bitmap.CompressFormat.PNG);
-            options.setToolbarTitle("Crop Wallpaper");
-            options.setToolbarColor(ContextCompat.getColor(instance, R.color.colorPrimary));
-            options.setLogoColor(ContextCompat.getColor(instance, R.color.colorAccent));
-            options.setActiveWidgetColor(ContextCompat.getColor(instance, R.color.colorPrimaryDark));
-            options.setStatusBarColor(ContextCompat.getColor(instance, R.color.colorPrimaryDark));
-            options.setFreeStyleCropEnabled(true);
-            UCrop.of(sourceUri, destinationUri)
-                    .withOptions(options)
-                    .withAspectRatio(7,8) // 7x8 fits 3 screens
-                    .start(instance);
-
-
-        }
+//        });
     }
 
 }
+
+
+//    public void get_posts_from_sub_action(final String sub_name){
+//        get_posts_from_sub(sub_name, false);
+//    }
+
+//    public void get_posts_from_sub(final String sub_name, final Boolean add_to_list){
+//
+//        String get_url = "https://www.reddit.com/r/" + sub_name + "/" + sort_by + ".json?limit=20&raw_json=1";
+//
+//        if (add_to_list){
+//            get_url += "&after=" + last_post_id;
+//            Log.d("URL",get_url);
+//        }
+//
+//
+//        // basic sub data
+//        Request request = new Request.Builder()
+//                .url(get_url)
+//                .build();
+//
+//        // put internet request in android thread queue
+//        OkHttpClient client = new OkHttpClient();
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.e("FAIL", "request fail");
+//            }
+//
+//
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                String json = response.body().string();
+//                JSONObject data = null;
+//                JSONArray posts_json_obj = null;
+//                try {
+//                    data = new JSONObject(json);
+//                } catch (JSONException e) {
+//                    Log.e("POST_get_data", "object");
+//                }
+//
+//                try{
+//                    posts_json_obj = data.getJSONObject("data").getJSONArray("children");
+//                }catch (Exception e) {
+//                    Log.e("POST", "children22");
+//                }
+//
+//                try{
+//                    last_post_id = posts_json_obj.getJSONObject(posts_json_obj.length()-1).getJSONObject("data").getString("name");
+//                }catch (Exception e){
+//                    Log.e("POST_ID", e.toString());
+//                }
+//
+////                comm__populate_recycler(frag_recycler, posts_json_obj, add_to_list);
+//                frag_recycler.populate_posts_list(posts_json_obj, add_to_list);
+//
+//            }
+//        });
+//    }
+//
+
+
+//    public void load_more_posts_action(){
+//        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
+//        String sub_name = spinner.getSelectedItem().toString();
+//        get_posts_from_sub(sub_name, true);
+//    }
+
+
+
+//    public void refresh_current_sub_posts_action(){
+//        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
+//        get_posts_from_sub_action(spinner.getSelectedItem().toString());
+//        lyt_refresh_swipe.setRefreshing(false);
+//    }
+
+
+
+//    private void setup_rec_list_listeners(){
+//        final RecyclerView rec_view_posts = (RecyclerView)findViewById(R.id.rec_view_posts);
+//
+//        ItemTouchHelper.SimpleCallback swipe_callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+//            @Override
+//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder viewHolder1) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+//                int position = viewHolder.getAdapterPosition();
+//                list_post_data.remove(position);
+//                post_previews.remove(position);
+//                rec_view_posts.getAdapter().notifyItemRemoved(position);
+//            }
+//        };
+//        ItemTouchHelper swipe_helper = new ItemTouchHelper(swipe_callback);
+//
+//        swipe_helper.attachToRecyclerView(rec_view_posts);
+//
+//
+//        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rec_view_posts.getLayoutManager();
+//        rec_view_posts.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            int ydy = 0;
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//            }
+//
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                int offset = dy - ydy;
+//                ydy = dy;
+//
+//                Integer child_count = list_post_data.size();
+//
+//                boolean at_top = (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0);
+//
+//                if (at_top) {
+//                    Log.d("SCROLL","show header");
+//                    //hide show main header.
+//                    return;
+//                }
+//
+//
+//                boolean at_bottom = linearLayoutManager.findLastCompletelyVisibleItemPosition() == child_count - 1;
+//
+////                Log.d("SCROLL_offset", Integer.toString(offset));
+////                Log.d("SCROLL_last_pos", Integer.toString(linearLayoutManager.findLastCompletelyVisibleItemPosition()));
+////                Log.d("SCROLL_child_count", Integer.toString(child_count-1));
+////                Log.d("SCROLL_scroll_state", Integer.toString(recyclerView.getScrollState()));
+//
+//                if (at_bottom) {
+//                    Log.d("SCROLL","load more");
+//                    rec_adapter_posts.showLoading(true);
+//                    //swipeRefreshLayout.setRefreshing(true);
+//                    //refresh to load data here.
+//                    load_more_posts_action();
+//                    return;
+//                }
+//                rec_adapter_posts.showLoading(false);
+////                swipeRefreshLayout.setRefreshing(false);
+//            }
+//        });
+//
+//
+//    }
+
+
+
+//    // moved this to other activity
+//    public File save_temp_bitmap(Bitmap bmp) {
+////        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+////        String imageFileName = "PNG_" + timeStamp + "_.png";
+////        File mFileTemp = null;
+//
+//
+//        String root=getApplicationContext().getDir("my_sub_dir", Context.MODE_PRIVATE).getAbsolutePath();
+//        File myDir = new File(root + "/Img");
+//        if(!myDir.exists()){
+//            myDir.mkdirs();
+//        }
+//
+////        Bitmap bbicon;
+////        bbicon=BitmapFactory.decodeResource(getResources(),R.drawable.logo);
+//        //ByteArrayOutputStream baosicon = new ByteArrayOutputStream();
+//        //bbicon.compress(Bitmap.CompressFormat.PNG,0, baosicon);
+//        //bicon=baosicon.toByteArray();
+//
+//        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+//        Log.d("FILE",extStorageDirectory);
+//        OutputStream outStream = null;
+//        File file = new File(extStorageDirectory, "er.PNG");
+//        try {
+//            outStream = new FileOutputStream(file);
+////            bbicon.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+//            bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+//            outStream.flush();
+//            outStream.close();
+//        } catch(Exception e) {
+//            Log.e("WRITE","FAIL");
+//            e.printStackTrace();
+//        }
+//
+////        try {
+////            mFileTemp=File.createTempFile(imageFileName,".png",myDir.getAbsoluteFile());
+////        } catch (IOException e1) {
+////            e1.printStackTrace();
+////        }
+//
+////        File mFileTemp = new File(imageFileName);
+////        FileOutputStream out = null;
+////        try {
+////            out = new FileOutputStream(mFileTemp);
+////            bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+////            // PNG is a lossless format, the compression factor (100) is ignored
+////        } catch (Exception e) {
+////            Log.e("WRITE","FAIL");
+////            e.printStackTrace();
+////        } finally {
+////            try {
+////                if (out != null) {
+////                    out.close();
+////                }
+////            } catch (IOException e) {
+////                e.printStackTrace();
+////            }
+////        }
+//
+//
+//
+//        return file;
+//    }
+//
+
+
+
+//    private class download_thumbnail extends AsyncTask<String, Void, Bitmap> {
+//        Integer preview_index;
+//
+//        public download_thumbnail(Integer preview_index) {
+//            this.preview_index = preview_index;
+//        }
+//
+//        protected Bitmap doInBackground(String... urls) {
+//            String image_url = urls[0];
+//            Bitmap bimage = null;
+//            try {
+//                InputStream in = new java.net.URL(image_url).openStream();
+//                bimage = BitmapFactory.decodeStream(in);
+//            } catch (Exception e) {
+//                Log.e("DOWNLOAD THUMB", e.getMessage());
+//            }
+//            return bimage;
+//        }
+//
+//        protected void onPostExecute(Bitmap result) {
+//            Log.d("PREVIEW_IDX", this.preview_index.toString()+post_previews.toString());
+//            post_previews.set(this.preview_index, result);
+//
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Log.d("DO_THING", "uhh");
+////                    rec_adapter_posts.notifyDataSetChanged();
+//
+//                }
+//            });
+//
+//
+//        }
+//    }
+
+
+
+//    public void populate_posts_list(JSONArray subs_obj, Boolean add_to_list){
+//
+//        if (!add_to_list){
+//
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    RecyclerView rec_view_posts = (RecyclerView)findViewById(R.id.rec_view_posts);
+//                    rec_view_posts.smoothScrollToPosition(0);
+//                }
+//            });
+//
+//            list_post_data.clear();
+//            post_previews.clear();
+//
+//        }
+//
+//
+//        Integer posts_count = subs_obj.length();
+//        Log.d("POPULATE_SUBS_obj_cnt", Integer.toString(posts_count));
+//
+//
+//
+//        Integer num = 0;
+//        if (add_to_list){
+//            num = post_previews.size();
+//        }
+//        for (int i = 0; i < subs_obj.length(); i++)
+//        {
+//            try {
+//                JSONObject preview = subs_obj.getJSONObject(i).getJSONObject("data").getJSONObject("preview");
+//                String author = subs_obj.getJSONObject(i).getJSONObject("data").getString("author");
+//                String title = subs_obj.getJSONObject(i).getJSONObject("data").getString("title");
+//
+//                String score = subs_obj.getJSONObject(i).getJSONObject("data").getString("score");
+//                String up_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("ups");
+//                String down_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("downs");
+//
+//
+//
+//                JSONObject images = preview.getJSONArray("images").getJSONObject(0);
+//                String source_url = images.getJSONObject("source").getString("url");
+//                JSONArray resolutions = images.getJSONArray("resolutions");
+//
+//                post_previews.add(null);
+//
+//
+//
+//                try{
+//                    source_url = resolutions.getJSONObject(3).getString("url");
+//                }catch (Exception e)
+//                {
+//                    Log.e("NO IMAGE", "soooory");
+//                }
+//
+//
+//
+//                String hd_url;
+//                try{
+////                    Integer res_count = resolutions.length();
+//                    hd_url = resolutions.getJSONObject(5).getString("url");
+//
+//                }catch (Exception e){
+//                    hd_url = source_url;
+//                    Log.e("FAIL HD RES", "i dunno");
+//                }
+//
+//                List<String> data_list = new ArrayList<>();
+//                data_list.add(title);
+//                data_list.add(author);
+//                data_list.add(hd_url);
+//                data_list.add(score);
+//
+//                list_post_data.add(data_list);
+//
+//                new download_thumbnail(num).execute(source_url);
+//
+//                num += 1;
+//
+//
+//            }catch (JSONException e) {
+//                Log.e("POSITION_PUT", Integer.toString(num));
+//                Log.e("POSITION_PUT", e.toString());
+//                Log.d("FAIL", subs_obj.toString());
+//            }
+//        }
+//
+////        Log.d("POPULATE_SUBS", subs_obj.toString());
+////        Log.d("POPULATE_SUBS", Integer.toString(list_post_data.size()));
+//
+//
+//
+//    }
+//
+//
+
+
+
+
+//    public class download_wallpaper extends AsyncTask<String, Void, Bitmap> {
+//        protected Bitmap doInBackground(String... urls) {
+//            String image_url = urls[0];
+//            Bitmap bimage = null;
+//            try {
+//                InputStream in = new java.net.URL(image_url).openStream();
+//                bimage = BitmapFactory.decodeStream(in);
+//
+//            } catch (Exception e) {
+//                Log.e("Error Message", e.getMessage());
+//                e.printStackTrace();
+//            }
+//            return bimage;
+//        }
+//
+//        protected void onPostExecute(Bitmap result) {
+//            // user desktop resolution
+//            DisplayMetrics displayMetrics = new DisplayMetrics();
+//            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//            int width = displayMetrics.widthPixels;
+//            int height = displayMetrics.heightPixels;
+//
+//            int ratio = width / height;
+//            Log.d("","");
+//            Log.d("WIDTH", Integer.toString(width)); // 1440
+//            Log.d("HEIGHT", Integer.toString(height)); // 2392
+//            Log.d("","");
+//
+//
+//            File temp_file = save_temp_bitmap(result);
+//            Uri sourceUri = Uri.fromFile(temp_file);
+//            Uri destinationUri = Uri.fromFile(new File(getApplicationContext().getCacheDir(), "IMG_" + System.currentTimeMillis()));
+//
+//            UCrop.Options options = new UCrop.Options();
+//            options.setCompressionQuality(100);
+//            options.setCompressionFormat(Bitmap.CompressFormat.PNG);
+//            options.setToolbarTitle("Crop Wallpaper");
+//            options.setToolbarColor(ContextCompat.getColor(instance, R.color.colorPrimary));
+//            options.setLogoColor(ContextCompat.getColor(instance, R.color.colorAccent));
+//            options.setActiveWidgetColor(ContextCompat.getColor(instance, R.color.colorPrimaryDark));
+//            options.setStatusBarColor(ContextCompat.getColor(instance, R.color.colorPrimaryDark));
+//            options.setFreeStyleCropEnabled(true);
+//            UCrop.of(sourceUri, destinationUri)
+//                    .withOptions(options)
+//                    .withAspectRatio(7,8) // 7x8 fits 3 screens
+//                    .start(instance);
+//
+//
+//        }
+//    }
+
+
+
+
+
 
 
 
