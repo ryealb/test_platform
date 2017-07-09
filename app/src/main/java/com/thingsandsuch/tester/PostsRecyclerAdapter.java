@@ -114,20 +114,13 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public static class LoaderHolder extends RecyclerView.ViewHolder {
         private ProgressBar prog_bar;
-//        private Bitmap p_preview;
-//        private List p_data;
 
         public LoaderHolder(View v) {
             super(v);
             prog_bar = (ProgressBar) v.findViewById(R.id.prog_loader);
-//            v.setOnClickListener(this);
+            prog_bar.setVisibility(View.VISIBLE);
+            
         }
-
-
-
-//        public void bind_data(Bitmap in_preview, List<String> data) {
-//            p_data = data;
-//        }
     }
 
 
@@ -167,10 +160,10 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             LoaderHolder loaderViewHolder = (LoaderHolder)holder;
             if (showLoader) {
                 Log.d("LOADER", "show");
-                loaderViewHolder.prog_bar.setVisibility(View.VISIBLE);
+//                loaderViewHolder.prog_bar.setVisibility(View.VISIBLE);
             } else {
                 Log.d("LOADER", "show");
-                loaderViewHolder.prog_bar.setVisibility(View.GONE);
+//                loaderViewHolder.prog_bar.setVisibility(View.GONE);
             }
 
             return;

@@ -15,10 +15,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -50,6 +52,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
     ArrayList<Bitmap> post_previews = new ArrayList<Bitmap>();
     ArrayList<List<String>> list_post_data = new ArrayList<List<String>>();
+
 
 
     @Override
@@ -137,25 +140,14 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                     return;
                 }
 
-
                 boolean at_bottom = linearLayoutManager.findLastCompletelyVisibleItemPosition() == child_count - 1;
-
-//                Log.d("SCROLL_offset", Integer.toString(offset));
-//                Log.d("SCROLL_last_pos", Integer.toString(linearLayoutManager.findLastCompletelyVisibleItemPosition()));
-//                Log.d("SCROLL_child_count", Integer.toString(child_count-1));
-//                Log.d("SCROLL_scroll_state", Integer.toString(recyclerView.getScrollState()));
 
                 if (at_bottom) {
                     Log.d("SCROLL","load more");
                     rec_adapter_posts.showLoading(true);
-                    //swipeRefreshLayout.setRefreshing(true);
-                    //refresh to load data here.
 
                     load_more_posts_action();
-                    return;
                 }
-                rec_adapter_posts.showLoading(false);
-//                swipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -226,6 +218,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     public void load_more_posts_action(){
         Log.d("LOAD", "load more");
         get_posts_from_sub(sub_title, true);
+        rec_adapter_posts.showLoading(false);
     }
 
     public void populate_posts_list(JSONArray subs_obj, Boolean add_to_list){
@@ -357,6 +350,12 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     public void to_fragment_get_posts_from_sub_action() {
         get_posts_from_sub_action(sub_title);
     }
+
+
+
+
+
+
 
 
 }
