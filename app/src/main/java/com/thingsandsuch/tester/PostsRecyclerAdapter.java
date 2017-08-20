@@ -30,9 +30,11 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     private ArrayList<List<String>> post_data;
 
     protected boolean showLoader = true;
+    protected boolean showHeader = true;
 
     private static final int VIEWTYPE_ITEM = 1;
     private static final int VIEWTYPE_LOADER = 2;
+    private static final int VIEWTYPE_HEADER = 3;
 
 
     public static class PreviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -119,11 +121,15 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             super(v);
             prog_bar = (ProgressBar) v.findViewById(R.id.prog_loader);
             prog_bar.setVisibility(View.VISIBLE);
-            
         }
     }
 
+    public static class HeaderHolder extends RecyclerView.ViewHolder {
 
+        public HeaderHolder(View v) {
+            super(v);
+        }
+    }
 
 
 
@@ -141,11 +147,14 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEWTYPE_LOADER) {
             Log.d("LOADER", "load");
-
             View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.loader_recycler_item, parent, false);
-            // Your LoaderViewHolder class
             return new LoaderHolder(inflatedView);
+        }
 
+        if (viewType == VIEWTYPE_HEADER) {
+            Log.d("HEADER", "show");
+            View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.header_recycler_item, parent, false);
+            return new HeaderHolder(inflatedView);
         }
 
 
@@ -165,12 +174,29 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 Log.d("LOADER", "show");
 //                loaderViewHolder.prog_bar.setVisibility(View.GONE);
             }
-
             return;
         }
+
+        if (holder instanceof HeaderHolder) {
+            HeaderHolder headerViewHolder = (HeaderHolder)holder;
+            if (showHeader) {
+                Log.d("LOADER", "show");
+//                loaderViewHolder.prog_bar.setVisibility(View.VISIBLE);
+            } else {
+                Log.d("LOADER", "show");
+//                loaderViewHolder.prog_bar.setVisibility(View.GONE);
+            }
+            return;
+        }
+
+
+
         try {
             PreviewHolder preview_holder = (PreviewHolder)holder;
             Bitmap bmp_preview = post_previews.get(position);
+
+
+
             List<String> lst_data = post_data.get(position);
             preview_holder.bind_data(bmp_preview, lst_data);
 
@@ -196,11 +222,22 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             return VIEWTYPE_LOADER;
         }
 
+        if (position == 0) {
+            return VIEWTYPE_HEADER;
+        }
+
+
         return VIEWTYPE_ITEM;
     }
 
     public void showLoading(boolean status) {
         showLoader = status;
     }
+
+    public void showHeader(boolean status) {
+        showHeader = status;
+    }
+
+
 
 }

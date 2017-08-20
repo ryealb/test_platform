@@ -37,6 +37,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -125,6 +127,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
         setSupportActionBar(toolbar);
         // noinspection ConstantConditions
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 
 
         // drawer actions
@@ -582,7 +586,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 Integer idx_spinner = spinner.getSelectedItemPosition();
 
                 String title = sub_data.get(idx_spinner).get(1);
-                txt_title.setText(title);
+                if (txt_title != null){ //TODO: fix for real
+                    txt_title.setText(title);
+                }
 
                 update_sub_banner();
 
@@ -595,9 +601,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
     public void update_sub_banner(){
         Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
         Integer idx_spinner = spinner.getSelectedItemPosition();
-        android.support.design.widget.AppBarLayout lyt_banner = (android.support.design.widget.AppBarLayout) findViewById(R.id.banner_layout);
+//        android.support.design.widget.AppBarLayout lyt_banner = (android.support.design.widget.AppBarLayout) findViewById(R.id.banner_layout);
 //        android.support.v7.widget.Toolbar lyt_banner = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
-//        LinearLayout lyt_banner = (LinearLayout) findViewById(R.id.banner_layout);
+        LinearLayout lyt_banner = (LinearLayout) findViewById(R.id.banner_layout);
 
         Log.d("BANNER_SET",sub_banners.toString());
 
@@ -606,7 +612,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
             if (bmp_banner != null){
                 Drawable draw = new BitmapDrawable(getResources(), bmp_banner);
-//                lyt_banner.setBackground(draw);
+                lyt_banner.setBackground(draw);
+            } else {
+//                lyt_banner
             }
         }
 
@@ -827,6 +835,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
         frag_post = new PostFragment();
         frag_post.setArguments(bundle);
+
+
+
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

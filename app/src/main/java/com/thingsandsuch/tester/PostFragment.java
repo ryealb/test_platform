@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,8 +37,9 @@ public class PostFragment extends Fragment {
         final View post_view = inflater.inflate(R.layout.post_fragment, container, false);
         Bundle bundle = this.getArguments();
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+//        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         if (bundle != null) {
             String title = bundle.getString("title");
@@ -77,6 +79,8 @@ public class PostFragment extends Fragment {
 
             PhotoView photoView = (PhotoView) post_view.findViewById(R.id.photo_view);
             photoView.setImageBitmap(bitmap);
+
+
             photoView.setOnClickListener(new PhotoView.OnClickListener() {
                 @Override
                 public void onClick(View view) {

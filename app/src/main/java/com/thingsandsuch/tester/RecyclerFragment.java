@@ -59,6 +59,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rec_view = inflater.inflate(R.layout.recycler_fragment, container, false);
 
+
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
 
 
@@ -66,6 +67,8 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         rec_view_posts = (RecyclerView) rec_view.findViewById(R.id.rec_view_posts );
         LinearLayoutManager lin_lyt_manager = new LinearLayoutManager(rec_view.getContext());
         rec_view_posts.setLayoutManager(lin_lyt_manager);
+
+
 
 
         // list adapter setup
@@ -136,6 +139,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
                 if (at_top) {
                     Log.d("SCROLL","show header");
+                    rec_adapter_posts.showHeader(true);
                     //hide show main header.
                     return;
                 }
@@ -231,6 +235,8 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         }
 
 
+        Log.d("PREVIEW_rec_view width", Integer.toString(rec_view_posts.getWidth()));
+
         Integer posts_count = subs_obj.length();
         Log.d("POPULATE_SUBS_obj_cnt", Integer.toString(posts_count));
 
@@ -324,6 +330,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
             try {
                 InputStream in = new java.net.URL(image_url).openStream();
                 bimage = BitmapFactory.decodeStream(in);
+
             } catch (Exception e) {
                 Log.e("DOWNLOAD THUMB", e.getMessage());
             }
@@ -331,7 +338,8 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         }
 
         protected void onPostExecute(Bitmap result) {
-            Log.d("PREVIEW_IDX", this.preview_index.toString()+post_previews.toString());
+//            Log.d("PREVIEW_IDX", this.preview_index.toString()+post_previews.toString());
+//            Log.d("PREVIEW_SIZE", Integer.toString(result.getWidth()) + "x" + Integer.toString(result.getHeight()));
             post_previews.set(this.preview_index, result);
             rec_adapter_posts.notifyDataSetChanged();
         }
