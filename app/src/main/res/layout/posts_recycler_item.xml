@@ -12,6 +12,7 @@
         <ImageView
             android:id="@+id/img_view_preview"
             android:layout_width="fill_parent"
+            android:paddingTop="1dp"
             android:layout_height="200dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"

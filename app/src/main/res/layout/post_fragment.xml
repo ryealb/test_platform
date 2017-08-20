@@ -66,11 +66,19 @@
                 <!--android:layout_height="wrap_content"-->
                 <!--android:text="down"/>-->
 
+
+
             <Button
                 android:id="@+id/btn_set_wall"
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ico_wall" />
+
+            <!--<Button-->
+                <!--android:id="@+id/menu_item_share"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:background="@drawable/ic_menu_share"/>-->
 
             <!--<Button-->
             <!--android:layout_width="wrap_content"-->

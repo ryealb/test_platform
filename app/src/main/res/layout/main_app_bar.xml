@@ -69,12 +69,19 @@
                 android:layout_height="match_parent"
                 android:spinnerMode="dropdown" />
 
-            <Button
-                android:id="@+id/btn_search"
-                android:gravity="end"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@drawable/ic_menu_search" />
+            <!--<Button-->
+                <!--android:id="@+id/btn_login"-->
+                <!--android:gravity="end"-->
+                <!--android:layout_width="20dp"-->
+                <!--android:layout_height="20dp"-->
+                <!--android:background="@drawable/ic_menu_settings" />-->
+
+            <!--<Button-->
+                <!--android:id="@+id/btn_search"-->
+                <!--android:gravity="end"-->
+                <!--android:layout_width="20dp"-->
+                <!--android:layout_height="20dp"-->
+                <!--android:background="@drawable/ic_menu_search" />-->
 
         </LinearLayout>
 

@@ -42,6 +42,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -115,6 +116,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
     public static Activity instance = null;
 
+    private ShareActionProvider mShareActionProvider;
 
 
     @Override
@@ -252,6 +254,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
     }
 
@@ -370,18 +373,15 @@ implements NavigationView.OnNavigationItemSelectedListener{
         default_subs.add("aww");
         default_subs.add("pics");
 
-        Bitmap banner = BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.logo_wbg);
         for (int i = 0; i < default_subs.size(); i++) {
             String name = default_subs.get(i);
             List<String> dt = new ArrayList<String>();
             dt.add(name);
-            dt.add("Title");
-            dt.add("URL");
+            dt.add("All");
+            dt.add("");
             sub_data.add(i,dt);
-//            sub_banners.add(i,banner);
             get_sub_data_for_title(i,name);
         }
-
 
     }
 
@@ -579,43 +579,53 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
     // SUB_TITLE SPINNER BAR
     public void set_sub_title(){
-        if (sub_data == null){
-            Log.e("TITLE_SET","sub_data == null");
-        }else {
-            if (sub_data.size() >= 1){
-                Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-                TextView txt_title = (TextView) findViewById(R.id.txt_sub_title);
+        Log.d("BANNER_set_sub_title", sub_data.toString());
 
-                Integer idx_spinner = spinner.getSelectedItemPosition();
+        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
+        TextView txt_title = (TextView) findViewById(R.id.txt_sub_title);
 
+        Integer idx_spinner = spinner.getSelectedItemPosition();
+        if (sub_data.size() > 0) {
+            List sd = sub_data.get(idx_spinner);
+            if (sd != null) {
                 String title = sub_data.get(idx_spinner).get(1);
-                if (txt_title != null){ //TODO: fix for real
+                if (txt_title != null) { //TODO: fix for real
                     txt_title.setText(title);
-                    update_sub_banner();
                 }
-
-            }else {
-                Log.e("TITLE_SET","sub_data > 1");
             }
+
+            update_sub_banner();
+
         }
+
     }
 
     public void update_sub_banner(){
         Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
         Integer idx_spinner = spinner.getSelectedItemPosition();
         ImageView view_banner = (ImageView) findViewById(R.id.banner_view);
+        if (view_banner != null){
 
-        List<String> st = sub_data.get(idx_spinner);
-        String banner_url = st.get(2);
-        if (banner_url != null){
+            List<String> st = sub_data.get(idx_spinner);
+            String banner_url = st.get(2);
             Context con = getBaseContext();
-            Glide.with(con)
-                    .load(banner_url)
-                    .centerCrop()
-                    .into(view_banner);
-            view_banner.setColorFilter(ContextCompat.getColor(con, R.color.colorPrimaryDark), android.graphics.PorterDuff.Mode.MULTIPLY);
-        }
+            if (!Objects.equals(banner_url, "")){
+                Glide.with(con)
+                        .load(banner_url)
+                        .centerCrop()
+                        .into(view_banner);
+                view_banner.setColorFilter(ContextCompat.getColor(con, R.color.colorPrimary), android.graphics.PorterDuff.Mode.MULTIPLY);
+            }else{
+                Glide.with(con)
+                        .load("")
+                        .placeholder(ContextCompat.getDrawable(con, R.mipmap.base_banner))
+                        .centerCrop()
+                        .into(view_banner);
 
+            }
+
+            view_banner.setColorFilter(ContextCompat.getColor(con, R.color.colorPrimary), android.graphics.PorterDuff.Mode.MULTIPLY);
+        }
 
     }
 
