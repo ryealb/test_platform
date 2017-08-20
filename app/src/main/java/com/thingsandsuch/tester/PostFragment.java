@@ -1,6 +1,7 @@
 package com.thingsandsuch.tester;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.yalantis.ucrop.UCrop;
 
@@ -29,7 +31,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class PostFragment extends Fragment {
-    Bitmap bitmap;
     Boolean card_visible = true;
 
     @Override
@@ -45,16 +46,9 @@ public class PostFragment extends Fragment {
             String title = bundle.getString("title");
             String author = bundle.getString("author");
             String score = bundle.getString("score");
+            String preview_url = bundle.getString("preview_url");
             final String hd_url = bundle.getString("hd_url");
-            String preview_path = bundle.getString("preview_path");
 
-            Log.d("PATH", preview_path);
-            File image_file = new  File(preview_path);
-
-            if(image_file.exists()){
-                Log.d("FILE", "EXISTS");
-                bitmap = BitmapFactory.decodeFile(image_file.getAbsolutePath());
-            }
 
             TextView lbl_title = (TextView) post_view.findViewById(R.id.lbl_list_item_title2);
             String t_title = title;
@@ -78,7 +72,9 @@ public class PostFragment extends Fragment {
             });
 
             PhotoView photoView = (PhotoView) post_view.findViewById(R.id.photo_view);
-            photoView.setImageBitmap(bitmap);
+            Glide.with(post_view.getContext())
+                    .load(preview_url)
+                    .into(photoView);
 
 
             photoView.setOnClickListener(new PhotoView.OnClickListener() {

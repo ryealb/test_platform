@@ -1,5 +1,6 @@
 package com.thingsandsuch.tester;
 
+import com.bumptech.glide.Glide;
 import com.yalantis.ucrop.UCrop;
 
 import android.Manifest;
@@ -8,6 +9,7 @@ import android.app.FragmentManager;
 import android.app.WallpaperManager;
 import android.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -38,6 +40,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.Spinner;
@@ -104,7 +107,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
     Boolean logged_in = Boolean.FALSE;
 
     List<String> sub_titles;
-    ArrayList<Bitmap> sub_banners = new ArrayList<Bitmap>();
     List<List<String>> sub_data = new ArrayList<List<String>>();
 
     public PostFragment frag_post;
@@ -374,8 +376,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
             List<String> dt = new ArrayList<String>();
             dt.add(name);
             dt.add("Title");
+            dt.add("URL");
             sub_data.add(i,dt);
-            sub_banners.add(i,banner);
+//            sub_banners.add(i,banner);
             get_sub_data_for_title(i,name);
         }
 
@@ -588,9 +591,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 String title = sub_data.get(idx_spinner).get(1);
                 if (txt_title != null){ //TODO: fix for real
                     txt_title.setText(title);
+                    update_sub_banner();
                 }
-
-                update_sub_banner();
 
             }else {
                 Log.e("TITLE_SET","sub_data > 1");
@@ -601,22 +603,19 @@ implements NavigationView.OnNavigationItemSelectedListener{
     public void update_sub_banner(){
         Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
         Integer idx_spinner = spinner.getSelectedItemPosition();
-//        android.support.design.widget.AppBarLayout lyt_banner = (android.support.design.widget.AppBarLayout) findViewById(R.id.banner_layout);
-//        android.support.v7.widget.Toolbar lyt_banner = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
-        LinearLayout lyt_banner = (LinearLayout) findViewById(R.id.banner_layout);
+        ImageView view_banner = (ImageView) findViewById(R.id.banner_view);
 
-        Log.d("BANNER_SET",sub_banners.toString());
-
-        if (sub_banners.size() > 0){
-            Bitmap bmp_banner = sub_banners.get(idx_spinner);
-
-            if (bmp_banner != null){
-                Drawable draw = new BitmapDrawable(getResources(), bmp_banner);
-                lyt_banner.setBackground(draw);
-            } else {
-//                lyt_banner
-            }
+        List<String> st = sub_data.get(idx_spinner);
+        String banner_url = st.get(2);
+        if (banner_url != null){
+            Context con = getBaseContext();
+            Glide.with(con)
+                    .load(banner_url)
+                    .centerCrop()
+                    .into(view_banner);
+            view_banner.setColorFilter(ContextCompat.getColor(con, R.color.colorPrimaryDark), android.graphics.PorterDuff.Mode.MULTIPLY);
         }
+
 
     }
 
@@ -654,6 +653,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
                     List<String> dt = new ArrayList<String>();
                     dt.add(sub_name);
                     dt.add(sub_title);
+                    dt.add(sub_banner_url);
                     sub_data.set(idx, dt);
 
                     if (sub_banner_url.equals("null")){
@@ -668,18 +668,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
                         Log.d("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
                     }
 
-
-
-                    new download_banner(idx).execute(sub_banner_url);
-
                 }catch (Exception e) {
                     Log.e("BANNER_GET_init", e.toString());
                 }
-
-
-
-
-//                populate_posts_list(posts_json);
 
             }
         });
@@ -741,8 +732,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
         //TODO : separate method to get titles/banner images from sub_names array
 
         sub_data.clear();
-        sub_banners.clear();
-//        post_previews.clear();
 
         Request request = new Request.Builder()
                 .addHeader("User-Agent", "Wulz App")
@@ -778,23 +767,14 @@ implements NavigationView.OnNavigationItemSelectedListener{
                         List<String> dt = new ArrayList<String>();
                         dt.add(sub_name);
                         dt.add(sub_title);
+                        dt.add(sub_banner_url);
                         sub_data.add(i,dt);
-//                        post_previews.add(null);
-
-                        if (sub_banner_url != null){
-                            Log.d("BANNER_GET", sub_banner_url);
-                            new download_banner(i).execute(sub_banner_url);
-                        }else{
-                            Log.e("BANNER_GET", child_data.toString());
-                        }
 
                     }
 
                 } catch (JSONException e) {
                     Log.e("FAIL", "get subs");
                 }
-
-//                set_subs_data();
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -824,18 +804,17 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
     // FRAGMENT
-    public void run_post_fragment(String title, String author, String hd_url, String score, String preview_path){
+    public void run_post_fragment(String title, String author, String hd_url, String score, String preview_url){
 
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
         bundle.putString("author", author);
         bundle.putString("hd_url", hd_url);
         bundle.putString("score", score);
-        bundle.putString("preview_path", preview_path);
+        bundle.putString("preview_url", preview_url);
 
         frag_post = new PostFragment();
         frag_post.setArguments(bundle);
-
 
 
 
@@ -847,50 +826,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
     }
 
-    // DOWNLOAD
-    private class download_banner extends AsyncTask<String, Void, Bitmap> {
-        Integer banner_index;
-
-        public download_banner (Integer banner_index) {
-            this.banner_index = banner_index;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String image_url = urls[0];
-            Bitmap bimage = null;
-            try {
-                InputStream in = new java.net.URL(image_url).openStream();
-                bimage = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("BANNER_DOWNLOAD", image_url);
-//                Log.e("BANNER_DOWNLOAD", e.getMessage());
-            }
-            return bimage;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            try{
-                Log.d("BANNER_DWNL_IDX", this.banner_index.toString()+sub_banners.toString());
-                if (result != null){
-                    sub_banners.set(this.banner_index, result);
-                }
-            }catch (Exception e){
-                Log.e("BANNER_DWNL_IDX", this.banner_index.toString() + sub_banners.toString());
-            }
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (banner_index == 0){
-                        update_sub_banner();
-                    }
-
-                }
-            });
-
-
-        }
-    }
 
     // SEARCH
     private void search_for_sub(){

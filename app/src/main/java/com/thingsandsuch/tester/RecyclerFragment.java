@@ -50,7 +50,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     private SwipeRefreshLayout lyt_refresh_swipe;
     private PostsRecyclerAdapter rec_adapter_posts;
 
-    ArrayList<Bitmap> post_previews = new ArrayList<Bitmap>();
     ArrayList<List<String>> list_post_data = new ArrayList<List<String>>();
 
 
@@ -70,9 +69,8 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
 
 
-
         // list adapter setup
-        rec_adapter_posts = new PostsRecyclerAdapter(post_previews, list_post_data);
+        rec_adapter_posts = new PostsRecyclerAdapter(list_post_data);
         rec_view_posts.setAdapter(rec_adapter_posts);
         setup_rec_list_listeners(rec_view_posts);
 
@@ -110,7 +108,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
 //                list_post_data.remove(position);
-//                post_previews.remove(position);
 //                rec_adapter_posts.notifyItemRemoved(position); //TODO: this might cause issues
             }
         };
@@ -230,7 +227,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         if (!add_to_list){
             rec_view_posts.smoothScrollToPosition(0);
             list_post_data.clear();
-            post_previews.clear();
 
         }
 
@@ -241,10 +237,9 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         Log.d("POPULATE_SUBS_obj_cnt", Integer.toString(posts_count));
 
 
-
         Integer num = 0;
         if (add_to_list){
-            num = post_previews.size();
+            num = list_post_data.size();
         }
         for (int i = 0; i < subs_obj.length(); i++)
         {
@@ -262,9 +257,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 JSONObject images = preview.getJSONArray("images").getJSONObject(0);
                 String source_url = images.getJSONObject("source").getString("url");
                 JSONArray resolutions = images.getJSONArray("resolutions");
-
-                post_previews.add(null);
-
 
 
                 try{
@@ -291,6 +283,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 data_list.add(author);
                 data_list.add(hd_url);
                 data_list.add(score);
+                data_list.add(source_url);
 
                 list_post_data.add(data_list);
 
@@ -306,7 +299,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
             }
         }
 
-
     }
 
     public void refresh_current_sub_posts_action(){
@@ -316,35 +308,23 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
 
 
-    // DOWNLOAD
-    private class download_thumbnail extends AsyncTask<String, Void, Bitmap> {
+    // NOT SURE NOW
+    private class download_thumbnail extends AsyncTask<String, Void, String> {
         Integer preview_index;
 
         public download_thumbnail(Integer preview_index) {
             this.preview_index = preview_index;
         }
 
-        protected Bitmap doInBackground(String... urls) {
+        protected String doInBackground(String... urls) {
             String image_url = urls[0];
-            Bitmap bimage = null;
-            try {
-                InputStream in = new java.net.URL(image_url).openStream();
-                bimage = BitmapFactory.decodeStream(in);
-
-            } catch (Exception e) {
-                Log.e("DOWNLOAD THUMB", e.getMessage());
-            }
-            return bimage;
+            return image_url;
         }
 
-        protected void onPostExecute(Bitmap result) {
-//            Log.d("PREVIEW_IDX", this.preview_index.toString()+post_previews.toString());
-//            Log.d("PREVIEW_SIZE", Integer.toString(result.getWidth()) + "x" + Integer.toString(result.getHeight()));
-            post_previews.set(this.preview_index, result);
+        protected void onPostExecute(String result) {
             rec_adapter_posts.notifyDataSetChanged();
         }
     }
-
 
 
 

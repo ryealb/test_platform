@@ -12,11 +12,9 @@
         <ImageView
             android:id="@+id/img_view_preview"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="200dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:minHeight="60dp"
-            android:maxHeight="200dp"
             android:src="@mipmap/logo" />
 
 

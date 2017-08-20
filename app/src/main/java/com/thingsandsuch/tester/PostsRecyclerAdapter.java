@@ -19,6 +19,8 @@ import java.util.List;
 import android.content.Context;
 import android.widget.ProgressBar;
 
+import com.bumptech.glide.Glide;
+
 /**
  * Created by ryan on 5/20/2017.
  */
@@ -26,7 +28,6 @@ import android.widget.ProgressBar;
 
 
 public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private ArrayList<Bitmap> post_previews;
     private ArrayList<List<String>> post_data;
 
     protected boolean showLoader = true;
@@ -39,7 +40,6 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public static class PreviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView img_view_preview;
-        private Bitmap p_preview;
         private List p_data;
 
 
@@ -51,22 +51,14 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         @Override
         public void onClick(View v) {
-//            Context context = itemView.getContext();
-//            Intent showPhotoIntent = new Intent(context, PhotoActivity.class);
-//            showPhotoIntent.putExtra(PHOTO_KEY, mPhoto);
-//            context.startActivity(showPhotoIntent);
             try{
                 String title = p_data.get(0).toString();
                 String author = p_data.get(1).toString();
                 String hd_url = p_data.get(2).toString();
                 String score = p_data.get(3).toString();
-                Bitmap bitmap = p_preview;
-                Context context = img_view_preview.getContext();
+                String preview_url = p_data.get(4).toString();
 
-                File temp_file = save_temp_bitmap(context, bitmap);
-                Uri sourceUri = Uri.fromFile(temp_file);
-
-                ((MainActivity) v.getContext()).run_post_fragment(title, author, hd_url, score, sourceUri.getPath());
+                ((MainActivity) v.getContext()).run_post_fragment(title, author, hd_url, score, preview_url);
 
             }catch (NullPointerException e){
                 Log.d("CLICK","BROKE"+e.toString());
@@ -76,35 +68,15 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
 
 
-        public File save_temp_bitmap(Context ctx, Bitmap bmp) {
-            String root=ctx.getDir("my_sub_dir", Context.MODE_PRIVATE).getAbsolutePath();
-            File myDir = new File(root + "/Img");
-            if(!myDir.exists()){
-                myDir.mkdirs();
-            }
-            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-            Log.d("FILE",extStorageDirectory);
-            OutputStream outStream = null;
-            File file = new File(extStorageDirectory, "er.PNG");
-            try {
-                outStream = new FileOutputStream(file);
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                outStream.flush();
-                outStream.close();
-            } catch(Exception e) {
-                Log.e("WRITE","FAIL");
-                e.printStackTrace();
-            }
-            return file;
-        }
-
-
-
-        public void bind_data(Bitmap in_preview, List<String> data) {
-            p_preview = in_preview;
+        public void bind_data(List<String> data) {
             p_data = data;
             try{
-                img_view_preview.setImageBitmap(in_preview);
+                Context context = itemView.getContext();
+                String url = p_data.get(4).toString();
+                Glide.with(context)
+                        .load(url)
+                        .into(img_view_preview);
+
             }catch (Exception e) {
                 Log.e("set_preview","FAILED");
             }
@@ -136,11 +108,8 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 
 
-
-
-    public PostsRecyclerAdapter(ArrayList<Bitmap> previews, ArrayList<List<String>> data) {
+    public PostsRecyclerAdapter(ArrayList<List<String>> data) {
         post_data = data;
-        post_previews = previews;
     }
 
     @Override
@@ -190,15 +159,10 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
 
 
-
         try {
             PreviewHolder preview_holder = (PreviewHolder)holder;
-            Bitmap bmp_preview = post_previews.get(position);
-
-
-
             List<String> lst_data = post_data.get(position);
-            preview_holder.bind_data(bmp_preview, lst_data);
+            preview_holder.bind_data(lst_data);
 
         }catch (Exception e){
             Log.e("PREVIEw0", "TURD");
@@ -210,7 +174,7 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return post_previews.size()+1;
+        return post_data.size()+1;
     }
 
     @Override
