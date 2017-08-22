@@ -1,5 +1,7 @@
 package com.thingsandsuch.tester;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.app.Fragment;
@@ -7,20 +9,17 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.AsyncTask;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import android.support.v7.widget.RecyclerView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
-import android.view.WindowManager;
-import android.widget.Toast;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,8 +28,8 @@ import org.json.JSONException;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Request;
@@ -43,22 +42,21 @@ import okhttp3.OkHttpClient;
 public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
     String sort_by = "hot";
-    String sub_title = "All";
+    String sub_name = "All";
     String last_post_id;
+
 
     private RecyclerView rec_view_posts;
     private SwipeRefreshLayout lyt_refresh_swipe;
     private PostsRecyclerAdapter rec_adapter_posts;
 
     ArrayList<List<String>> list_post_data = new ArrayList<List<String>>();
-
+    List<String> sub_banner_data = new ArrayList<>();
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rec_view = inflater.inflate(R.layout.recycler_fragment, container, false);
-
-
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
 
 
@@ -70,7 +68,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
 
         // list adapter setup
-        rec_adapter_posts = new PostsRecyclerAdapter(list_post_data);
+        rec_adapter_posts = new PostsRecyclerAdapter(list_post_data, sub_banner_data);
         rec_view_posts.setAdapter(rec_adapter_posts);
         setup_rec_list_listeners(rec_view_posts);
 
@@ -84,12 +82,17 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 }
             });
 
+
         return rec_view;
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d("RECYCLER","create");
+
     }
 
 
@@ -106,7 +109,12 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                int position = viewHolder.getAdapterPosition();
+
+                rec_adapter_posts.notifyDataSetChanged();
+
+                Log.d("SWIPE", "swiped");
+//                rec_adapter_posts.notifyDataSetChanged();
+//                int position = viewHolder.getAdapterPosition();
 //                list_post_data.remove(position);
 //                rec_adapter_posts.notifyItemRemoved(position); //TODO: this might cause issues
             }
@@ -160,7 +168,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     // POSTS
     public void get_posts_from_sub(final String sub_name, final Boolean add_to_list){
 
-        String get_url = "https://www.reddit.com/r/" + sub_name + "/" + sort_by + ".json?limit=20&raw_json=1";
+        String get_url = "https://www.reddit.com/r/" + sub_name + "/" + sort_by + ".json?limit=25&raw_json=1";
 
         if (add_to_list){
             get_url += "&after=" + last_post_id;
@@ -218,7 +226,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
     public void load_more_posts_action(){
         Log.d("LOAD", "load more");
-        get_posts_from_sub(sub_title, true);
+        get_posts_from_sub(sub_name, true);
         rec_adapter_posts.showLoading(false);
     }
 
@@ -227,6 +235,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         if (!add_to_list){
             rec_view_posts.smoothScrollToPosition(0);
             list_post_data.clear();
+
 
         }
 
@@ -302,10 +311,69 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     }
 
     public void refresh_current_sub_posts_action(){
-        get_posts_from_sub_action(sub_title);
+        get_posts_from_sub_action(sub_name);
         lyt_refresh_swipe.setRefreshing(false);
     }
 
+
+
+    // TITLE BANNER
+    public void get_title_banner_for_sub(String sub_title){
+        sub_banner_data.clear();
+
+        Log.d("BANNER_GET", sub_title);
+
+        Request request = new Request.Builder()
+                .url("https://www.reddit.com/r/" + sub_title + "/about.json?raw_json=1")
+                .build();
+
+        // put internet request in android thread queue
+        OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("BANNER", "request fail");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                JSONObject data = null;
+                JSONObject child_data = null;
+                try {
+                    data = new JSONObject(json);
+                } catch (JSONException e) {
+                    Log.e("BANNER", "data");
+                }
+
+
+                try {
+                    child_data = data.getJSONObject("data");
+                }catch (Exception e) {
+                    Log.e("BANNER_GET_child_data", e.toString());
+                    return;
+                }
+
+                try{
+                    String sub_display_title = child_data.getString("title");
+                    sub_banner_data.add(sub_display_title);
+                    Log.d("BANNER_TITLE", sub_display_title);
+                }catch (Exception e) {
+                    Log.e("BANNER_GET_title", e.toString());
+                }
+
+                try{
+                    String sub_banner_url = child_data.getString("banner_img");
+                    sub_banner_data.add(sub_banner_url);
+                    Log.d("BANNER_URL", sub_banner_url);
+                }catch (Exception e) {
+                    Log.e("BANNER_GET_url", e.toString());
+                }
+
+            }
+        });
+
+    }
 
 
     // NOT SURE NOW
@@ -330,13 +398,10 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
     // COMMS
     @Override
-    public void to_fragment_sub_title(String subtitle) {
-        sub_title = subtitle;
-    }
-
-    @Override
-    public void to_fragment_get_posts_from_sub_action() {
-        get_posts_from_sub_action(sub_title);
+    public void to_fragment_get_posts_from_sub_action(String subname) {
+        sub_name = subname;
+        get_title_banner_for_sub(sub_name);
+        get_posts_from_sub_action(sub_name);
     }
 
 

@@ -181,8 +181,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
         subs_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         populate_subs();
 
-
-
         // SUB_TITLE spinner setup
         Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
         spinner.setAdapter(subs_adapter);
@@ -190,9 +188,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-                set_sub_title();
-                frag_recycler.to_fragment_sub_title(spinner.getSelectedItem().toString());
-                frag_recycler.to_fragment_get_posts_from_sub_action();
+                frag_recycler.to_fragment_get_posts_from_sub_action(spinner.getSelectedItem().toString());
             }
 
             @Override
@@ -235,8 +231,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
         setup_storage_permissions();
 
 
-
     }
+
 
 
 
@@ -378,9 +374,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
             List<String> dt = new ArrayList<String>();
             dt.add(name);
             dt.add("All");
-            dt.add("");
+            dt.add("all the things");
             sub_data.add(i,dt);
-            get_sub_data_for_title(i,name);
         }
 
     }
@@ -578,116 +573,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
     // SUB_TITLE SPINNER BAR
-    public void set_sub_title(){
-        Log.d("BANNER_set_sub_title", sub_data.toString());
-
-        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-        TextView txt_title = (TextView) findViewById(R.id.txt_sub_title);
-
-        Integer idx_spinner = spinner.getSelectedItemPosition();
-        if (sub_data.size() > 0) {
-            List sd = sub_data.get(idx_spinner);
-            if (sd != null) {
-                String title = sub_data.get(idx_spinner).get(1);
-                if (txt_title != null) { //TODO: fix for real
-                    txt_title.setText(title);
-                }
-            }
-
-            update_sub_banner();
-
-        }
-
-    }
-
-    public void update_sub_banner(){
-        Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-        Integer idx_spinner = spinner.getSelectedItemPosition();
-        ImageView view_banner = (ImageView) findViewById(R.id.banner_view);
-        if (view_banner != null){
-
-            List<String> st = sub_data.get(idx_spinner);
-            String banner_url = st.get(2);
-            Context con = getBaseContext();
-            if (!Objects.equals(banner_url, "")){
-                Glide.with(con)
-                        .load(banner_url)
-                        .centerCrop()
-                        .into(view_banner);
-                view_banner.setColorFilter(ContextCompat.getColor(con, R.color.colorPrimary), android.graphics.PorterDuff.Mode.MULTIPLY);
-            }else{
-                Glide.with(con)
-                        .load("")
-                        .placeholder(ContextCompat.getDrawable(con, R.mipmap.base_banner))
-                        .centerCrop()
-                        .into(view_banner);
-
-            }
-
-            view_banner.setColorFilter(ContextCompat.getColor(con, R.color.colorPrimary), android.graphics.PorterDuff.Mode.MULTIPLY);
-        }
-
-    }
-
-    public void get_sub_data_for_title(Integer index, String sub_title){
-
-        final Integer idx = index;
-        Request request = new Request.Builder()
-                .url("https://www.reddit.com/r/" + sub_title + "/about.json?raw_json=1")
-                .build();
-
-        // put internet request in android thread queue
-        OkHttpClient client = new OkHttpClient();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("FAIL", "request fail");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String json = response.body().string();
-                JSONObject data = null;
-                try {
-                    data = new JSONObject(json);
-                } catch (JSONException e) {
-                    Log.e("FAIL - get_data", "object");
-                }
-
-                try{
-                    JSONObject child_data = data.getJSONObject("data");
-                    String sub_name = child_data.getString("display_name");
-                    String sub_title = child_data.getString("title");
-                    String sub_banner_url = child_data.getString("banner_img");
-
-                    List<String> dt = new ArrayList<String>();
-                    dt.add(sub_name);
-                    dt.add(sub_title);
-                    dt.add(sub_banner_url);
-                    sub_data.set(idx, dt);
-
-                    if (sub_banner_url.equals("null")){
-                        Log.e("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
-                    }else if (sub_banner_url.equals(null)){
-                        Log.e("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
-                    }else if (sub_banner_url.equals(" ")){
-                        Log.e("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
-                    }else if (sub_banner_url.isEmpty()){
-                        Log.e("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
-                    }else {
-                        Log.d("BANNER_GET_init", sub_name + "  "+ sub_banner_url);
-                    }
-
-                }catch (Exception e) {
-                    Log.e("BANNER_GET_init", e.toString());
-                }
-
-            }
-        });
-
-
-    }
-
     public void populate_subs(){
         for (int i = 0; i < sub_data.size(); i++) {
             String name = sub_data.get(i).get(0);
@@ -798,7 +683,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
                         subs_adapter.notifyDataSetChanged();
 
-                        set_sub_title();
+//                        set_sub_title();
                         Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
                         frag_recycler.get_posts_from_sub_action(spinner.getSelectedItem().toString());
 
@@ -865,6 +750,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
         editor.apply();
 
     }
+
+
 }
 
 

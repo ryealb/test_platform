@@ -38,6 +38,8 @@ public class PostFragment extends Fragment {
         final View post_view = inflater.inflate(R.layout.post_fragment, container, false);
         Bundle bundle = this.getArguments();
 
+        Log.d("POST","create");
+
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
 //        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
