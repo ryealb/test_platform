@@ -3,6 +3,7 @@ package com.thingsandsuch.tester;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.app.Fragment;
 
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 
@@ -96,7 +98,15 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("RESUME", "recycler");
 
+        LinearLayout toolbar_layout = (LinearLayout) (getActivity()).findViewById(R.id.toolbar_layout);
+        toolbar_layout.setVisibility(View.VISIBLE);
+
+    }
 
     // LISTENERS
     private void setup_rec_list_listeners(final RecyclerView rec_view_posts){
@@ -350,12 +360,17 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 try {
                     child_data = data.getJSONObject("data");
                 }catch (Exception e) {
+                    sub_banner_data.add("All the things.");
+                    sub_banner_data.add("");
                     Log.e("BANNER_GET_child_data", e.toString());
                     return;
                 }
 
                 try{
                     String sub_display_title = child_data.getString("title");
+                    if (Objects.equals(sub_display_title, "")) {
+                        sub_display_title = "All the things.";
+                    }
                     sub_banner_data.add(sub_display_title);
                     Log.d("BANNER_TITLE", sub_display_title);
                 }catch (Exception e) {

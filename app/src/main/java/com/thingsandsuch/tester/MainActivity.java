@@ -4,6 +4,7 @@ import com.bumptech.glide.Glide;
 import com.yalantis.ucrop.UCrop;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.WallpaperManager;
@@ -127,12 +128,15 @@ implements NavigationView.OnNavigationItemSelectedListener{
         instance = this; // TODO: this is bad -- definitely memory leak
 
         // toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_action_bar);
         setSupportActionBar(toolbar);
         // noinspection ConstantConditions
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        android.support.v7.app.ActionBar action_bar = getSupportActionBar();
+        action_bar.setDisplayShowTitleEnabled(false);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+
+
 
 
         // drawer actions
@@ -161,6 +165,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
         // default data
         init_default_data();
 
+        Log.d("ON_CREATE", "yup");
 
         // last login
         SharedPreferences settings = getSharedPreferences("last_login", 0);
@@ -294,7 +299,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
         super.onResume();
 
-        Log.d("LOGIN", "on resume");
+        Log.d("RESUME", "main");
 
         if (logged_in){
             return;
@@ -658,7 +663,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
                         String sub_title = child_data.getString("title");
                         String sub_banner_url = child_data.getString("banner_img");
 
-
+                        Log.d("TITLE", sub_title);
                         List<String> dt = new ArrayList<String>();
                         dt.add(sub_name);
                         dt.add(sub_title);
@@ -685,6 +690,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 //                        set_sub_title();
                         Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
+
                         frag_recycler.get_posts_from_sub_action(spinner.getSelectedItem().toString());
 
                     }
@@ -716,7 +722,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, frag_post);
-        fragmentTransaction.addToBackStack("");
+        fragmentTransaction.addToBackStack("post_fragment");
         fragmentTransaction.commit();
 
     }

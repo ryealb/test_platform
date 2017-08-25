@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -40,9 +41,9 @@ public class PostFragment extends Fragment {
 
         Log.d("POST","create");
 
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        LinearLayout toolbar_layout = (LinearLayout) (getActivity()).findViewById(R.id.toolbar_layout);
+        toolbar_layout.setVisibility(View.INVISIBLE);
 
-//        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         if (bundle != null) {
             String title = bundle.getString("title");
