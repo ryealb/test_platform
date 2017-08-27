@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,16 +15,21 @@ import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -75,10 +81,11 @@ public class PostFragment extends Fragment {
             });
 
             PhotoView photoView = (PhotoView) post_view.findViewById(R.id.photo_view);
+            photoView.setScaleType(ImageView.ScaleType.FIT_START);
+
             Glide.with(post_view.getContext())
                     .load(preview_url)
                     .into(photoView);
-
 
             photoView.setOnClickListener(new PhotoView.OnClickListener() {
                 @Override
@@ -91,9 +98,52 @@ public class PostFragment extends Fragment {
                     }
 
                     card_visible = lyt_card.getVisibility() == View.VISIBLE;
-
                 }
             });
+
+
+//            final GestureDetector gesture = new GestureDetector(getActivity(),
+//                    new GestureDetector.SimpleOnGestureListener() {
+//
+//                        @Override
+//                        public boolean onDown(MotionEvent e) {
+//                            return true;
+//                        }
+//
+//                        @Override
+//                        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+//                                               float velocityY) {
+//                            Log.d("SWIPE_GESTURE", "onFling has been called!");
+//                            final int SWIPE_MIN_DISTANCE = 120;
+//                            final int SWIPE_MAX_OFF_PATH = 250;
+//                            final int SWIPE_THRESHOLD_VELOCITY = 200;
+//                            try {
+//                                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+//                                    return false;
+//                                if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
+//                                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+//                                    Log.d("SWIPE_GESTURE", "Right to Left");
+//                                } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+//                                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+//                                    Log.d("SWIPE_GESTURE", "Left to Right");
+//
+//                                    getActivity().getFragmentManager().popBackStack();
+//
+//                                }
+//                            } catch (Exception e) {
+//                                // nothing
+//                            }
+//                            return super.onFling(e1, e2, velocityX, velocityY);
+//                        }
+//                    });
+//
+//            photoView.setOnTouchListener(new View.OnTouchListener() {
+//                @Override
+//                public boolean onTouch(View v, MotionEvent event) {
+//                    return gesture.onTouchEvent(event);
+//                }
+//            });
+
         }
 
         return post_view;
