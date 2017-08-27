@@ -1,10 +1,8 @@
 package com.thingsandsuch.tester;
 
-import com.bumptech.glide.Glide;
 import com.yalantis.ucrop.UCrop;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.WallpaperManager;
@@ -16,13 +14,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.BitmapDrawable;
 
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 
 import android.support.v4.app.ActivityCompat;
@@ -36,13 +31,17 @@ import android.util.Log;
 import android.os.Bundle;
 import android.util.Base64;
 
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.ShareActionProvider;
 import android.widget.Toast;
 import android.widget.Spinner;
@@ -54,7 +53,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
-import java.io.InputStream;
 import java.io.IOException;
 
 import android.support.v7.widget.Toolbar;
@@ -117,6 +115,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
     public static Activity instance = null;
 
+    PopupWindow sort_popup;
+
     private ShareActionProvider mShareActionProvider;
 
 
@@ -134,8 +134,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
         android.support.v7.app.ActionBar action_bar = getSupportActionBar();
         action_bar.setDisplayShowTitleEnabled(false);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-
 
 
 
@@ -365,13 +363,13 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
         List<String> default_subs = new ArrayList<>();
         default_subs.add("All");
-        default_subs.add("EarthPorn");
         default_subs.add("AbandonedPorn");
-        default_subs.add("ImaginaryTechnology");
         default_subs.add("art");
-        default_subs.add("ImaginaryColorscapes");
-        default_subs.add("Futurology");
         default_subs.add("aww");
+        default_subs.add("EarthPorn");
+        default_subs.add("Futurology");
+        default_subs.add("ImaginaryColorscapes");
+        default_subs.add("ImaginaryTechnology");
         default_subs.add("pics");
 
         for (int i = 0; i < default_subs.size(); i++) {
@@ -663,6 +661,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
                         String sub_title = child_data.getString("title");
                         String sub_banner_url = child_data.getString("banner_img");
 
+                        Log.d("SUB_NAME", sub_name);
                         Log.d("TITLE", sub_title);
                         List<String> dt = new ArrayList<String>();
                         dt.add(sub_name);
@@ -673,7 +672,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
                     }
 
                 } catch (JSONException e) {
-                    Log.e("FAIL", "get subs");
+                    Log.e("TITLE", "get subs" + e.toString());
+                    Log.e("FAIL", "get subs" + e.toString());
                 }
 
                 runOnUiThread(new Runnable() {
@@ -687,10 +687,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
                         }
 
                         subs_adapter.notifyDataSetChanged();
-
-//                        set_sub_title();
                         Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-
                         frag_recycler.get_posts_from_sub_action(spinner.getSelectedItem().toString());
 
                     }
@@ -704,7 +701,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
 
-    // FRAGMENT
+    // FRAGMENTS
     public void run_post_fragment(String title, String author, String hd_url, String score, String preview_url){
 
         Bundle bundle = new Bundle();
@@ -727,6 +724,66 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
     }
 
+    public void sort_posts_recycler() {
+        RelativeLayout content_main = (RelativeLayout) findViewById(R.id.content_main);
+        LayoutInflater layoutInflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View customView = layoutInflater.inflate(R.layout.sort_popup,null);
+
+        final RadioGroup rad_sort_group = (RadioGroup) customView.findViewById(R.id.rad_sort_group);
+        RadioButton rad_sort_hot = (RadioButton) customView.findViewById(R.id.rad_sort_hot);
+        RadioButton rad_sort_new = (RadioButton) customView.findViewById(R.id.rad_sort_new);
+        RadioButton rad_sort_top = (RadioButton) customView.findViewById(R.id.rad_sort_top);
+        RadioButton rad_sort_controversial = (RadioButton) customView.findViewById(R.id.rad_sort_controversial);
+
+//        final List<String> sort_options = new ArrayList<>();
+//        sort_options.add("hot");
+//        sort_options.add("new");
+//        sort_options.add("top");
+//        sort_options.add("controversial");
+
+
+        if (Objects.equals(frag_recycler.sort_by, "hot")) {
+            rad_sort_hot.setChecked(true);
+        }
+
+        if (Objects.equals(frag_recycler.sort_by, "new")) {
+            rad_sort_new.setChecked(true);
+        }
+
+        if (Objects.equals(frag_recycler.sort_by, "top")) {
+            rad_sort_top.setChecked(true);
+        }
+
+        if (Objects.equals(frag_recycler.sort_by, "controversial")) {
+            rad_sort_controversial.setChecked(true);
+        }
+
+        sort_popup = new PopupWindow(customView, DrawerLayout.LayoutParams.WRAP_CONTENT, DrawerLayout.LayoutParams.WRAP_CONTENT);
+        sort_popup.setFocusable(true);
+        sort_popup.showAtLocation(content_main, Gravity.CENTER, 0, 0);
+
+        rad_sort_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                int radioButtonID = rad_sort_group.getCheckedRadioButtonId();
+                View radioButton = rad_sort_group.findViewById(radioButtonID);
+                int idx = rad_sort_group.indexOfChild(radioButton);
+                RadioButton r = (RadioButton)  rad_sort_group.getChildAt(idx);
+                String selected_text = r.getText().toString();
+                Log.d("SORT",selected_text);
+
+                if (!Objects.equals(frag_recycler.sort_by, selected_text)) {
+                    frag_recycler.sort_by = selected_text;
+                    Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
+                    frag_recycler.to_fragment_get_posts_from_sub_action(spinner.getSelectedItem().toString());
+                }
+                sort_popup.dismiss();
+            }
+        });
+
+
+
+    }
 
     // SEARCH
     private void search_for_sub(){

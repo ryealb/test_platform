@@ -4,6 +4,7 @@
     <string name="sub_title">This is the Title of the sub</string>
     <string name="main_greeting">hello</string>
     <string name="sub_name">All</string>
+    <string name="sort_by">hot</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

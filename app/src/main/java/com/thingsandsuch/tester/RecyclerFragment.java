@@ -18,8 +18,10 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -128,11 +130,22 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 //                list_post_data.remove(position);
 //                rec_adapter_posts.notifyItemRemoved(position); //TODO: this might cause issues
             }
+
+            @Override
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                if (viewHolder instanceof PostsRecyclerAdapter.PreviewHolder) {
+                    return super.getSwipeDirs(recyclerView, viewHolder);
+                } else {
+                    return 0;
+                }
+            }
+
         };
+
+
+
         ItemTouchHelper swipe_helper = new ItemTouchHelper(swipe_callback);
-
         swipe_helper.attachToRecyclerView(rec_view_posts);
-
 
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rec_view_posts.getLayoutManager();
         rec_view_posts.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -314,7 +327,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
             }catch (JSONException e) {
                 Log.e("POSITION_PUT", Integer.toString(num));
                 Log.e("POSITION_PUT", e.toString());
-                Log.d("FAIL", subs_obj.toString());
+                Log.d("FAIL", "populate_posts_list"+ subs_obj.toString());
             }
         }
 
@@ -391,6 +404,17 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     }
 
 
+    // SORT
+    public void set_sort_title() {
+        try {
+            TextView txt_sort_title = (TextView) (getActivity()).findViewById(R.id.txt_sort_title);
+            txt_sort_title.setText(sort_by);
+        } catch (Exception e) {
+            Log.e("SORT_TITLE", sort_by);
+        }
+
+    }
+
     // NOT SURE NOW
     private class download_thumbnail extends AsyncTask<String, Void, String> {
         Integer preview_index;
@@ -415,6 +439,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     @Override
     public void to_fragment_get_posts_from_sub_action(String subname) {
         sub_name = subname;
+        set_sort_title();
         get_title_banner_for_sub(sub_name);
         get_posts_from_sub_action(sub_name);
     }

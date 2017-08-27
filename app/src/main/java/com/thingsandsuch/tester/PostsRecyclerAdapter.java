@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -106,6 +107,7 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     public static class HeaderHolder extends RecyclerView.ViewHolder {
         private ImageView img_view_banner;
         private TextView txt_title;
+        private Button btn_sort;
         private List s_data;
 
 
@@ -113,6 +115,7 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             super(v);
             img_view_banner = (ImageView) v.findViewById(R.id.banner_view);
             txt_title = (TextView) v.findViewById(R.id.txt_sub_title);
+            btn_sort = (Button) v.findViewById(R.id.btn_sort);
         }
 
 
@@ -149,6 +152,14 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             }catch (Exception e) {
                 Log.e("BANNER_BIND_TITLE","failed");
             }
+
+            // sort button setup
+            btn_sort.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                ((MainActivity) v.getContext()).sort_posts_recycler();
+                }
+            });
+
         }
     }
 
@@ -227,7 +238,6 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         if (position == 0) {
             return VIEWTYPE_HEADER;
         }
-
 
         return VIEWTYPE_ITEM;
     }
