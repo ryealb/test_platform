@@ -1,90 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/coord_layout"
-    android:gravity="top"
-    android:layout_margin="0dp"
-    android:background="@color/colorPrimary"
-    android:orientation="vertical"
     android:fitsSystemWindows="true">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_selected"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="420dp"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/photo_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top" />
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-    <LinearLayout
-        android:id="@+id/post_title_card"
-        android:layout_width="match_parent"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+            <com.github.chrisbanes.photoview.PhotoView
+                android:id="@+id/photo_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top" />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/post_info" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_set_wall"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/color_info_card"
-        android:layout_margin="4dp"
-        android:layout_gravity="bottom">
-
-        <TextView
-            android:id="@+id/lbl_list_item_title2"
-            android:textColor="@color/colorText"
-            android:textSize="25dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxHeight="200dp"/>
-
-
-        <TextView
-            android:id="@+id/lbl_list_item_author2"
-            android:textColor="@color/colorText"
-            android:textSize="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="right">
-
-            <TextView
-                android:id="@+id/txt_post_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="score"/>
-
-            <!--<TextView-->
-                <!--android:id="@+id/post_downvotes"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="down"/>-->
-
-
-
-            <Button
-                android:id="@+id/btn_set_wall"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ico_wall" />
-
-            <!--<Button-->
-                <!--android:id="@+id/menu_item_share"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:background="@drawable/ic_menu_share"/>-->
-
-            <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="OPEN IN BROWSER" />-->
-
-        </LinearLayout>
-
-    </LinearLayout>
+        android:layout_margin="@dimen/fab_margin"
+        app:layout_anchor="@id/app_bar"
+        app:layout_anchorGravity="bottom|end"
+        app:srcCompat="@drawable/ico_wall" />
 
 </android.support.design.widget.CoordinatorLayout>

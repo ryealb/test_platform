@@ -6,5 +6,6 @@
     <color name="color_info_card">#212121</color>
     <color name="colorAccent">#0089e9</color>
     <color name="colorText">#F5F5F5</color>
+    <color name="color_sub_title">#d4d4d4</color>
     <color name="color_text_dark">#7e7e7e</color>
 </resources>

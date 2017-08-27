@@ -1,35 +1,26 @@
 package com.thingsandsuch.tester;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.Layout;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -38,68 +29,71 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class PostFragment extends Fragment {
-    Boolean card_visible = true;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View post_view = inflater.inflate(R.layout.post_fragment, container, false);
         Bundle bundle = this.getArguments();
 
-        Log.d("POST","create");
-
         LinearLayout toolbar_layout = (LinearLayout) (getActivity()).findViewById(R.id.toolbar_layout);
         toolbar_layout.setVisibility(View.INVISIBLE);
 
-
         if (bundle != null) {
-            String title = bundle.getString("title");
+            String title = bundle.getString("title", "");
             String author = bundle.getString("author");
             String score = bundle.getString("score");
             String preview_url = bundle.getString("preview_url");
             final String hd_url = bundle.getString("hd_url");
 
 
-            TextView lbl_title = (TextView) post_view.findViewById(R.id.lbl_list_item_title2);
-            String t_title = title;
-            if (title.length() > 32){
-                t_title = title.substring(0,32);
+            TextView txt_title = (TextView) post_view.findViewById(R.id.post_info_title);
+            TextView txt_title_2 = (TextView) post_view.findViewById(R.id.post_info_title_2);
+
+            Boolean in_top_line = true;
+            if (title.length() > 24){
+                String[] split_title = title.split("\\s+");
+                String title_1 = "";
+                String title_2 = "";
+
+
+                for (String aSplit_title : split_title) {
+                    if (in_top_line && title_1.length() < 24 && title_1.length() + aSplit_title.length() + 1 <= 24) {
+                        title_1 += aSplit_title + " ";
+                    } else {
+                        title_2 += aSplit_title + " ";
+                        in_top_line = false;
+                    }
+                }
+                txt_title.setText(title_1);
+                txt_title_2.setVisibility(View.VISIBLE);
+                txt_title_2.setText(title_2);
+
+            } else {
+                txt_title.setText(title);
+                txt_title_2.setVisibility(View.INVISIBLE);
             }
 
-            lbl_title.setText(t_title);
 
-            TextView lbl_author = (TextView) post_view.findViewById(R.id.lbl_list_item_author2);
+
+            TextView lbl_author = (TextView) post_view.findViewById(R.id.post_info_author);
             lbl_author.setText(author.toUpperCase());
 
-            TextView txt_score = (TextView) post_view.findViewById(R.id.txt_post_score);
+            TextView txt_score = (TextView) post_view.findViewById(R.id.post_info_upvote);
             txt_score.setText(score);
 
-            Button btn_set_wall  = (Button) post_view.findViewById(R.id.btn_set_wall);
-            btn_set_wall.setOnClickListener(new Button.OnClickListener() {
+            FloatingActionButton btn_set_wall  = (FloatingActionButton) post_view.findViewById(R.id.btn_set_wall);
+            btn_set_wall.setOnClickListener(new FloatingActionButton.OnClickListener() {
                 public void onClick(View v) {
                  new download_wallpaper().execute(hd_url);
                 }
             });
 
             PhotoView photoView = (PhotoView) post_view.findViewById(R.id.photo_view);
-            photoView.setScaleType(ImageView.ScaleType.FIT_START);
+            photoView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
             Glide.with(post_view.getContext())
                     .load(preview_url)
                     .into(photoView);
 
-            photoView.setOnClickListener(new PhotoView.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    LinearLayout lyt_card = (LinearLayout) post_view.findViewById(R.id.post_title_card);
-                    if (card_visible){
-                        lyt_card.setVisibility(View.INVISIBLE);
-                    }else{
-                        lyt_card.setVisibility(View.VISIBLE);
-                    }
-
-                    card_visible = lyt_card.getVisibility() == View.VISIBLE;
-                }
-            });
 
 
 //            final GestureDetector gesture = new GestureDetector(getActivity(),
