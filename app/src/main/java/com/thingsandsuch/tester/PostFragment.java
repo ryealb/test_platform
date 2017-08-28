@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -35,7 +35,7 @@ public class PostFragment extends Fragment {
         final View post_view = inflater.inflate(R.layout.post_fragment, container, false);
         Bundle bundle = this.getArguments();
 
-        LinearLayout toolbar_layout = (LinearLayout) (getActivity()).findViewById(R.id.toolbar_layout);
+        CollapsingToolbarLayout toolbar_layout = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
         toolbar_layout.setVisibility(View.GONE);
 
         if (bundle != null) {

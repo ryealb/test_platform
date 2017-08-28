@@ -1,5 +1,6 @@
 package com.thingsandsuch.tester;
 
+import com.bumptech.glide.Glide;
 import com.yalantis.ucrop.UCrop;
 
 import android.Manifest;
@@ -21,11 +22,10 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
-import android.support.design.widget.FloatingActionButton;
 
 import android.util.Log;
 import android.os.Bundle;
@@ -38,10 +38,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.ShareActionProvider;
 import android.widget.Toast;
 import android.widget.Spinner;
@@ -56,7 +57,6 @@ import org.json.JSONException;
 import java.io.IOException;
 
 import android.support.v7.widget.Toolbar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.design.widget.NavigationView;
 
 
@@ -109,6 +109,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
     List<String> sub_titles;
     List<List<String>> sub_data = new ArrayList<List<String>>();
 
+    List<String> sub_banner_data = new ArrayList<>();
+
     public PostFragment frag_post;
     public RecyclerFragment frag_recycler;
     private ArrayAdapter<String> subs_adapter;
@@ -116,6 +118,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
     public static Activity instance = null;
 
     PopupWindow sort_popup;
+
 
     private ShareActionProvider mShareActionProvider;
 
@@ -125,30 +128,29 @@ implements NavigationView.OnNavigationItemSelectedListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        instance = this; // TODO: this is bad -- definitely memory leak
-
-        // toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_action_bar);
+        // TOOLBAR
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // noinspection ConstantConditions
+
         android.support.v7.app.ActionBar action_bar = getSupportActionBar();
         action_bar.setDisplayShowTitleEnabled(false);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        instance = this; // TODO: this is bad -- definitely memory leak
 
 
         // drawer actions
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle); // TODO whats goin on here
-        toggle.syncState();
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open,
+//                R.string.navigation_drawer_close);
+//        drawer.setDrawerListener(toggle); // TODO whats goin on here
+//        toggle.syncState();
 
 
-        // roll out menu action listener
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//        // roll out menu action listener
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
 
 
         // setup main fragment
@@ -157,7 +159,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, frag_recycler);
         fragmentTransaction.commit();
-
 
 
         // default data
@@ -191,7 +192,12 @@ implements NavigationView.OnNavigationItemSelectedListener{
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
-                frag_recycler.to_fragment_get_posts_from_sub_action(spinner.getSelectedItem().toString());
+                String sub_name = spinner.getSelectedItem().toString();
+                frag_recycler.to_fragment_get_posts_from_sub_action(sub_name);
+
+                get_title_banner_for_sub(sub_name);
+
+
             }
 
             @Override
@@ -202,15 +208,26 @@ implements NavigationView.OnNavigationItemSelectedListener{
         });
 
 
-        // FAB
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.hide();
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                load_more_posts_action();
+        // SORT button setup
+        Button btn_sort = (Button) findViewById(R.id.btn_sort);
+        btn_sort.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                sort_posts_recycler();
             }
         });
+
+
+//        // FAB
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.hide();
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                load_more_posts_action();
+//            }
+//        });
+
+
 
 
 
@@ -241,12 +258,12 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        if (drawer.isDrawerOpen(GravityCompat.START)) {
+//            drawer.closeDrawer(GravityCompat.START);
+//        } else {
+        super.onBackPressed();
+//        }
     }
 
     @Override
@@ -282,8 +299,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
             start_sign_in();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -584,6 +601,110 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
 
+    // BANNER TITLE
+    public void get_title_banner_for_sub(String sub_title){
+        sub_banner_data.clear();
+
+        Log.d("BANNER_GET", sub_title);
+
+        Request request = new Request.Builder()
+                .url("https://www.reddit.com/r/" + sub_title + "/about.json?raw_json=1")
+                .build();
+
+
+        // GET DATA
+        // put internet request in android thread queue
+        OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("BANNER", "request fail");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                JSONObject data = null;
+                JSONObject child_data = null;
+                try {
+                    data = new JSONObject(json);
+                } catch (JSONException e) {
+                    Log.e("BANNER", "data");
+                }
+
+
+                try {
+                    child_data = data.getJSONObject("data");
+                }catch (Exception e) {
+                    sub_banner_data.add("All the things.");
+                    sub_banner_data.add("");
+                    Log.e("BANNER_GET_child_data", e.toString());
+                    return;
+                }
+
+                try{
+                    String sub_display_title = child_data.getString("title");
+                    if (Objects.equals(sub_display_title, "")) {
+                        sub_display_title = "All the things.";
+                    }
+                    sub_banner_data.add(sub_display_title);
+                    Log.d("BANNER_TITLE", sub_display_title);
+                }catch (Exception e) {
+                    Log.e("BANNER_GET_title", e.toString());
+                }
+
+                try{
+                    String sub_banner_url = child_data.getString("banner_img");
+                    sub_banner_data.add(sub_banner_url);
+                    Log.d("BANNER_URL", sub_banner_url);
+                }catch (Exception e) {
+                    Log.e("BANNER_GET_url", e.toString());
+                }
+
+                update_title_banner_display();
+
+            }
+        });
+    }
+
+    public void update_title_banner_display() {
+        Log.d("BANNER_DATA", sub_banner_data.toString());
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageView img_view_banner = (ImageView) findViewById(R.id.main_activity_banner);
+                Log.d("BANNER_IMG", Boolean.toString(img_view_banner.isEnabled()));
+                String banner_url = sub_banner_data.get(1);
+                Log.d("BANNER_URL", banner_url);
+
+                Context context = getApplicationContext();
+
+                try {
+                    Glide.with(context)
+                            .load(banner_url)
+                            .placeholder(ContextCompat.getDrawable(context, R.mipmap.base_banner))
+                            .centerCrop()
+                            .into(img_view_banner);
+                    img_view_banner.setColorFilter(ContextCompat.getColor(context, R.color.color_banner_shade), android.graphics.PorterDuff.Mode.MULTIPLY);
+                }catch (Exception e) {
+                    Log.e("BANNER_BIND_IMG","failed");
+                }
+
+
+                try {
+                    TextView banner_title = (TextView) findViewById(R.id.main_banner_title);
+
+                    String title = sub_banner_data.get(0);
+                    banner_title.setText(title);
+                }catch (Exception e) {
+                    Log.e("BANNER_BIND_TITLE","failed");
+                }
+            }
+        });
+    }
+
+
 
     // USER DATA PULL
     public void get_user_name(String access_token) throws IOException {
@@ -714,18 +835,17 @@ implements NavigationView.OnNavigationItemSelectedListener{
         frag_post = new PostFragment();
         frag_post.setArguments(bundle);
 
-
-
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, frag_post);
         fragmentTransaction.addToBackStack("post_fragment");
+        fragmentTransaction.replace(R.id.fragment_container, frag_post);
         fragmentTransaction.commit();
 
     }
 
     public void sort_posts_recycler() {
-        RelativeLayout content_main = (RelativeLayout) findViewById(R.id.content_main);
+//        RelativeLayout content_main = (RelativeLayout) findViewById(R.id.content_main);
+        NestedScrollView content_main = (NestedScrollView) findViewById(R.id.content_main);
         LayoutInflater layoutInflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View customView = layoutInflater.inflate(R.layout.sort_popup,null);
 
@@ -784,6 +904,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
     }
+
+
+
 
     // SEARCH
     private void search_for_sub(){
