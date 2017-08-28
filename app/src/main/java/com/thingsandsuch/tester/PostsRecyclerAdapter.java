@@ -124,20 +124,11 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             Context context = itemView.getContext();
             try {
                 String banner_url = s_data.get(1).toString();
-//                if (!Objects.equals(banner_url, "")){
                 Glide.with(context)
                         .load(banner_url)
                         .placeholder(ContextCompat.getDrawable(context, R.mipmap.base_banner))
                         .centerCrop()
                         .into(img_view_banner);
-//                }else{
-//                    Glide.with(context)
-//                            .load("")
-//                            .placeholder(ContextCompat.getDrawable(context, R.mipmap.base_banner))
-//                            .centerCrop()
-//                            .into(img_view_banner);
-//
-//                }
 
                 img_view_banner.setColorFilter(ContextCompat.getColor(context, R.color.color_banner_shade), android.graphics.PorterDuff.Mode.MULTIPLY);
             }catch (Exception e) {

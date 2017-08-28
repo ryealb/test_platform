@@ -94,9 +94,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Log.d("RECYCLER","create");
-
     }
 
 
