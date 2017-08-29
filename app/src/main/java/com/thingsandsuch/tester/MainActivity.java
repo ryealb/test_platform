@@ -21,10 +21,14 @@ import android.provider.MediaStore;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
@@ -41,6 +45,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -130,7 +135,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
         setContentView(R.layout.main_activity);
 
         // TOOLBAR
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
         android.support.v7.app.ActionBar action_bar = getSupportActionBar();
@@ -141,16 +146,18 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
         // drawer actions
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, drawer, toolbar, R.string.navigation_drawer_open,
-//                R.string.navigation_drawer_close);
-//        drawer.setDrawerListener(toggle); // TODO whats goin on here
-//        toggle.syncState();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle); // TODO whats goin on here
+        toggle.syncState();
 
+        LinearLayout drawer_main = (LinearLayout) findViewById(R.id.drawer_main);
+        drawer_main.setVisibility(View.GONE);
 
 //        // roll out menu action listener
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.content_main);
 //        navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -218,17 +225,28 @@ implements NavigationView.OnNavigationItemSelectedListener{
         });
 
 
-//        // FAB
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.hide();
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-////                load_more_posts_action();
-//            }
-//        });
 
+        // TOOLBAR hide - show
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.main_app_bar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange = -1;
 
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                TextView main_banner_title = (TextView) findViewById(R.id.main_banner_title);
+                if (scrollRange + verticalOffset == 0) {
+                    main_banner_title.setVisibility(View.GONE);
+                    isShow = true;
+                } else if(isShow) {
+                    main_banner_title.setVisibility(View.VISIBLE);
+                    isShow = false;
+                }
+            }
+        });
 
 
 
@@ -259,12 +277,12 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
     @Override
     public void onBackPressed() {
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        if (drawer.isDrawerOpen(GravityCompat.START)) {
-//            drawer.closeDrawer(GravityCompat.START);
-//        } else {
-        super.onBackPressed();
-//        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+           super.onBackPressed();
+        }
     }
 
     @Override

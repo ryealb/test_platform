@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,8 +37,14 @@ public class PostFragment extends Fragment {
         final View post_view = inflater.inflate(R.layout.post_fragment, container, false);
         Bundle bundle = this.getArguments();
 
-        CollapsingToolbarLayout toolbar_layout = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
-        toolbar_layout.setVisibility(View.GONE);
+//        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+//        CollapsingToolbarLayout toolbar_layout = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
+//        toolbar_layout.setVisibility(View.GONE);
+
+//        AppBarLayout app_bar = (AppBarLayout) (getActivity()).findViewById(R.id.app_bar);
+//        app_bar.setVisibility(View.GONE);
 
         if (bundle != null) {
             String title = bundle.getString("title", "");
@@ -154,9 +162,13 @@ public class PostFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        AppBarLayout app_bar = (AppBarLayout) (getActivity()).findViewById(R.id.main_app_bar);
+//        CollapsingToolbarLayout coll_tool_bar = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
+//        app_bar.setVisibility(View.GONE);
+//        coll_tool_bar.setVisibility(View.GONE);
+
+        
 
     }
 

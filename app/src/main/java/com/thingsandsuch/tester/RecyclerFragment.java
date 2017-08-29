@@ -1,5 +1,6 @@
 package com.thingsandsuch.tester;
 
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -50,7 +51,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rec_view = inflater.inflate(R.layout.recycler_fragment, container, false);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
 
 
         // list setup
@@ -92,8 +93,12 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         super.onResume();
         Log.d("RESUME", "recycler");
 
-        CollapsingToolbarLayout toolbar_layout = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
-        toolbar_layout.setVisibility(View.VISIBLE);
+//        AppBarLayout app_bar = (AppBarLayout) (getActivity()).findViewById(R.id.main_app_bar);
+//        CollapsingToolbarLayout coll_tool_bar = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
+//        app_bar.setVisibility(View.VISIBLE);
+//        coll_tool_bar.setVisibility(View.VISIBLE);
+
+
     }
 
     // LISTENERS
