@@ -39,6 +39,7 @@ import android.view.MenuItem;
 
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
@@ -232,13 +233,13 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
         // search button listener setup
-//        Button btn_search = (Button) findViewById(R.id.btn_search);
-//        btn_search.setOnClickListener(new Button.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
+        ImageButton btn_login = (ImageButton) findViewById(R.id.btn_login);
+        btn_login.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
 //                search_for_sub();
-//            }
-//        });
+            }
+        });
 
 
         // search edit text
