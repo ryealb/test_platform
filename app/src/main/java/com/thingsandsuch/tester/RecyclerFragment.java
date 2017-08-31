@@ -17,6 +17,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.Spinner;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -177,14 +178,12 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
     // POSTS
     public void get_posts_from_sub(final String sub_name, final Boolean add_to_list){
-
         String get_url = "https://www.reddit.com/r/" + sub_name + "/" + sort_by + ".json?limit=25&raw_json=1";
 
         if (add_to_list){
             get_url += "&after=" + last_post_id;
             Log.d("URL",get_url);
         }
-
 
         // basic sub data
         Request request = new Request.Builder()
@@ -198,8 +197,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
             public void onFailure(Call call, IOException e) {
                 Log.e("FAIL", "request fail");
             }
-
-
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -245,10 +242,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         if (!add_to_list){
             rec_view_posts.smoothScrollToPosition(0);
             list_post_data.clear();
-
-
         }
-
 
         Log.d("PREVIEW_rec_view width", Integer.toString(rec_view_posts.getWidth()));
 
@@ -285,8 +279,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                     Log.e("NO IMAGE", "soooory");
                 }
 
-
-
                 String hd_url;
                 try{
 //                    Integer res_count = resolutions.length();
@@ -303,10 +295,11 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 data_list.add(hd_url);
                 data_list.add(score);
                 data_list.add(source_url);
+                data_list.add(up_votes);
+                data_list.add(down_votes);
 
                 list_post_data.add(data_list);
 
-                new RecyclerFragment.download_thumbnail(num).execute(source_url);
 
                 num += 1;
 
@@ -318,6 +311,8 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
             }
         }
 
+        new RecyclerFragment.update_recycler_view(num).execute("");
+
     }
 
     public void refresh_current_sub_posts_action(){
@@ -328,16 +323,13 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
 
     // NOT SURE NOW
-    private class download_thumbnail extends AsyncTask<String, Void, String> {
-        Integer preview_index;
+    private class update_recycler_view extends AsyncTask<String, Void, String> {
 
-        public download_thumbnail(Integer preview_index) {
-            this.preview_index = preview_index;
+        public update_recycler_view(Integer i) {
         }
 
-        protected String doInBackground(String... urls) {
-            String image_url = urls[0];
-            return image_url;
+        protected String doInBackground(String... ss) {
+            return "";
         }
 
         protected void onPostExecute(String result) {

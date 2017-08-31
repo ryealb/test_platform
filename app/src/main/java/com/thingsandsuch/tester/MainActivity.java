@@ -22,7 +22,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -417,6 +416,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
             sub_data.add(i,dt);
         }
 
+        get_title_banner_for_sub("all");
+
     }
 
     private void setup_storage_permissions(){
@@ -604,8 +605,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 logged_in = true;
             }
         });
-
-
     }
 
 
@@ -621,8 +620,10 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
     // BANNER TITLE
-    public void get_title_banner_for_sub(String sub_title){
+    public void get_title_banner_for_sub(final String sub_title){
         sub_banner_data.clear();
+        sub_banner_data.add("");
+        sub_banner_data.add("");
 
         Log.d("BANNER_GET", sub_title);
 
@@ -648,17 +649,13 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 try {
                     data = new JSONObject(json);
                 } catch (JSONException e) {
-                    Log.e("BANNER", "data");
+                    Log.e("BANNER", e.toString());
                 }
-
 
                 try {
                     child_data = data.getJSONObject("data");
                 }catch (Exception e) {
-                    sub_banner_data.add("All the things.");
-                    sub_banner_data.add("");
                     Log.e("BANNER_GET_child_data", e.toString());
-                    return;
                 }
 
                 try{
@@ -666,22 +663,68 @@ implements NavigationView.OnNavigationItemSelectedListener{
                     if (Objects.equals(sub_display_title, "")) {
                         sub_display_title = "All the things.";
                     }
-                    sub_banner_data.add(sub_display_title);
-                    Log.d("BANNER_TITLE", sub_display_title);
+                    sub_banner_data.set(0, sub_display_title);
                 }catch (Exception e) {
+                    sub_banner_data.set(0, "All the things.");
                     Log.e("BANNER_GET_title", e.toString());
                 }
 
+                String sub_banner_url = "";
                 try{
-                    String sub_banner_url = child_data.getString("banner_img");
-                    sub_banner_data.add(sub_banner_url);
-                    Log.d("BANNER_URL", sub_banner_url);
+                    sub_banner_url = child_data.getString("banner_img");
                 }catch (Exception e) {
                     Log.e("BANNER_GET_url", e.toString());
                 }
 
+                if (Objects.equals(sub_banner_url, "")) {
+                    get_fallback_banner_for_sub(sub_title);
+                    return;
+                }
+
+                if (Objects.equals(sub_banner_url, null)) {
+                    get_fallback_banner_for_sub(sub_title);
+                    return;
+                }
+
+                sub_banner_data.set(1, sub_banner_url);
                 update_title_banner_display();
 
+            }
+        });
+    }
+
+    public void get_fallback_banner_for_sub(String sub_title){
+        String get_url = "https://www.reddit.com/r/" + sub_title + "/" + "top" + ".json?limit=1&raw_json=1";
+        Request request = new Request.Builder()
+                .url(get_url)
+                .build();
+
+        // GET DATA
+        OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("BANNER_FALLBACK", e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                try {
+                    JSONObject data = new JSONObject(json);
+                    JSONArray posts_json_obj = data.getJSONObject("data").getJSONArray("children");
+                    JSONObject preview = posts_json_obj.getJSONObject(0).getJSONObject("data").getJSONObject("preview");
+                    JSONObject images = preview.getJSONArray("images").getJSONObject(0);
+                    String banner_url = images.getJSONObject("source").getString("url");
+
+                    if (!Objects.equals(banner_url, null)){
+                        sub_banner_data.set(1, banner_url);
+                        update_title_banner_display();
+                    }
+
+                }catch (Exception e) {
+                    Log.e("BANNER_FALLBACK", e.toString());
+                }
             }
         });
     }
@@ -842,13 +885,13 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
     // FRAGMENTS
-    public void run_post_fragment(String title, String author, String hd_url, String score, String preview_url){
+    public void run_post_fragment(String title, String author, String hd_url, String upvote, String preview_url){
 
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
         bundle.putString("author", author);
         bundle.putString("hd_url", hd_url);
-        bundle.putString("score", score);
+        bundle.putString("upvote", upvote);
         bundle.putString("preview_url", preview_url);
 
         frag_post = new PostFragment();

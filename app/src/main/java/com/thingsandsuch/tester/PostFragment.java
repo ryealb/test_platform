@@ -49,7 +49,7 @@ public class PostFragment extends Fragment {
         if (bundle != null) {
             String title = bundle.getString("title", "");
             String author = bundle.getString("author");
-            String score = bundle.getString("score");
+            String score = bundle.getString("upvote");
             String preview_url = bundle.getString("preview_url");
             final String hd_url = bundle.getString("hd_url");
 
