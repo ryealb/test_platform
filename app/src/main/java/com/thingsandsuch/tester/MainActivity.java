@@ -44,9 +44,11 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -158,8 +160,13 @@ implements NavigationView.OnNavigationItemSelectedListener{
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-//        LinearLayout drawer_main = (LinearLayout) findViewById(R.id.drawer_main);
-//        drawer_main.setVisibility(View.GONE);
+        // login
+        Button btn_login = (Button) findViewById(R.id.btn_login);
+        btn_login.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                start_sign_in();
+            }
+        });
 
 //        // roll out menu action listener
 //        NavigationView navigationView = (NavigationView) findViewById(R.id.content_main);
@@ -326,8 +333,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
             start_sign_in();
         }
 
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        drawer.closeDrawer(GravityCompat.START);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -809,8 +816,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        TextView txt_user_name = (TextView) findViewById(R.id.txt_user_name);
-                        txt_user_name.setText(current_user_name);
+                        Button btn_login = (Button) findViewById(R.id.btn_login);
+                        btn_login.setText(current_user_name);
                     }
                 });
 

@@ -115,14 +115,34 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
-    <!--<include layout="@layout/side_bar_header" />-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/drawer_main"
-        android:gravity="left"
-        android:text="THIS IS A TEST" />
+    <ScrollView
+        android:layout_width="241dp"
+        android:background="#333"
+        android:layout_gravity="start"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="POOP"/>
+
+            <Button
+                android:id="@+id/btn_login"
+                android:text="@string/login_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
 
 </android.support.v4.widget.DrawerLayout>
 
