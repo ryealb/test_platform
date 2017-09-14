@@ -162,13 +162,21 @@ public class PostFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
 //        AppBarLayout app_bar = (AppBarLayout) (getActivity()).findViewById(R.id.main_app_bar);
 //        CollapsingToolbarLayout coll_tool_bar = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
 //        app_bar.setVisibility(View.GONE);
 //        coll_tool_bar.setVisibility(View.GONE);
 
-        
+
+        AppBarLayout app_bar_layout = (AppBarLayout) (getActivity().findViewById(R.id.main_app_bar));
+
+        if (app_bar_layout != null) {
+            app_bar_layout.setExpanded(false, true);
+//            app_bar_layout.setVisibility(View.INVISIBLE);
+        }
+
 
     }
 

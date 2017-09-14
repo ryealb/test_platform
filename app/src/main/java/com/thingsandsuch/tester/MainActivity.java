@@ -9,6 +9,7 @@ import android.app.FragmentManager;
 import android.app.WallpaperManager;
 import android.app.FragmentTransaction;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +41,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -124,6 +126,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
     PopupWindow sort_popup;
 
+    boolean banner_shown = false;
+
 
     private ShareActionProvider mShareActionProvider;
 
@@ -146,14 +150,16 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
         // drawer actions
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle); // TODO whats goin on here
+
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        LinearLayout drawer_main = (LinearLayout) findViewById(R.id.drawer_main);
-        drawer_main.setVisibility(View.GONE);
+//        LinearLayout drawer_main = (LinearLayout) findViewById(R.id.drawer_main);
+//        drawer_main.setVisibility(View.GONE);
 
 //        // roll out menu action listener
 //        NavigationView navigationView = (NavigationView) findViewById(R.id.content_main);
@@ -204,7 +210,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
                 get_title_banner_for_sub(sub_name);
 
-
             }
 
             @Override
@@ -228,7 +233,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
         // TOOLBAR hide - show
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.main_app_bar);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isShow = false;
             int scrollRange = -1;
 
             @Override
@@ -236,13 +240,18 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 if (scrollRange == -1) {
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
+
+                Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
                 TextView main_banner_title = (TextView) findViewById(R.id.main_banner_title);
+
                 if (scrollRange + verticalOffset == 0) {
+                    banner_shown = false;
                     main_banner_title.setVisibility(View.GONE);
-                    isShow = true;
-                } else if(isShow) {
+                    ((TextView) spinner.getSelectedView()).setTextSize(20);
+                } else{
+                    banner_shown = true;
                     main_banner_title.setVisibility(View.VISIBLE);
-                    isShow = false;
+                    ((TextView) spinner.getSelectedView()).setTextSize(30);
                 }
             }
         });
@@ -250,13 +259,13 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
         // search button listener setup
-        ImageButton btn_login = (ImageButton) findViewById(R.id.btn_login);
-        btn_login.setOnClickListener(new Button.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-//                search_for_sub();
-            }
-        });
+//        ImageButton btn_login = (ImageButton) findViewById(R.id.btn_login);
+//        btn_login.setOnClickListener(new Button.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+////                search_for_sub();
+//            }
+//        });
 
 
         // search edit text
@@ -745,7 +754,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 try {
                     Glide.with(context)
                             .load(banner_url)
-                            .placeholder(ContextCompat.getDrawable(context, R.mipmap.base_banner))
+//                            .placeholder(ContextCompat.getDrawable(context, R.mipmap.base_banner))
                             .centerCrop()
                             .into(img_view_banner);
                     img_view_banner.setColorFilter(ContextCompat.getColor(context, R.color.color_banner_shade), android.graphics.PorterDuff.Mode.MULTIPLY);
@@ -900,7 +909,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.addToBackStack("post_fragment");
-        fragmentTransaction.replace(R.id.fragment_container, frag_post);
+        fragmentTransaction.replace(R.id.drawer_layout, frag_post);
         fragmentTransaction.commit();
 
     }
