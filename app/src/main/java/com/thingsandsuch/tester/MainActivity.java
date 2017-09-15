@@ -9,7 +9,6 @@ import android.app.FragmentManager;
 import android.app.WallpaperManager;
 import android.app.FragmentTransaction;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,18 +40,12 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ExpandableListView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.ShareActionProvider;
 import android.widget.Toast;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -117,7 +110,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
     List<String> sub_titles;
     List<List<String>> sub_data = new ArrayList<List<String>>();
-
     List<String> sub_banner_data = new ArrayList<>();
 
     public PostFragment frag_post;
@@ -127,12 +119,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
     public static Activity instance = null;
 
     PopupWindow sort_popup;
-
-    boolean banner_shown = false;
-
-
-    private ShareActionProvider mShareActionProvider;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,11 +153,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 start_sign_in();
             }
         });
-
-//        // roll out menu action listener
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.content_main);
-//        navigationView.setNavigationItemSelectedListener(this);
-
 
         // setup main fragment
         frag_recycler = new RecyclerFragment();
@@ -252,11 +233,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 TextView main_banner_title = (TextView) findViewById(R.id.main_banner_title);
 
                 if (scrollRange + verticalOffset == 0) {
-                    banner_shown = false;
                     main_banner_title.setVisibility(View.GONE);
                     ((TextView) spinner.getSelectedView()).setTextSize(20);
                 } else{
-                    banner_shown = true;
                     main_banner_title.setVisibility(View.VISIBLE);
                     ((TextView) spinner.getSelectedView()).setTextSize(30);
                 }
@@ -326,12 +305,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_login) {
-            // do the login
-            start_sign_in();
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -636,15 +609,15 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
     // BANNER TITLE
-    public void get_title_banner_for_sub(final String sub_title){
+    public void get_title_banner_for_sub(final String sub_name){
         sub_banner_data.clear();
         sub_banner_data.add("");
         sub_banner_data.add("");
 
-        Log.d("BANNER_GET", sub_title);
+        Log.d("BANNER_GET", sub_name);
 
         Request request = new Request.Builder()
-                .url("https://www.reddit.com/r/" + sub_title + "/about.json?raw_json=1")
+                .url("https://www.reddit.com/r/" + sub_name + "/about.json?raw_json=1")
                 .build();
 
 
@@ -674,6 +647,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
                     Log.e("BANNER_GET_child_data", e.toString());
                 }
 
+
                 try{
                     String sub_display_title = child_data.getString("title");
                     if (Objects.equals(sub_display_title, "")) {
@@ -693,12 +667,12 @@ implements NavigationView.OnNavigationItemSelectedListener{
                 }
 
                 if (Objects.equals(sub_banner_url, "")) {
-                    get_fallback_banner_for_sub(sub_title);
+                    get_fallback_banner_for_sub(sub_name);
                     return;
                 }
 
                 if (Objects.equals(sub_banner_url, null)) {
-                    get_fallback_banner_for_sub(sub_title);
+                    get_fallback_banner_for_sub(sub_name);
                     return;
                 }
 
@@ -769,15 +743,16 @@ implements NavigationView.OnNavigationItemSelectedListener{
                     Log.e("BANNER_BIND_IMG","failed");
                 }
 
-
+                TextView banner_title = (TextView) findViewById(R.id.main_banner_title);
+                String title = "-//-/--";
                 try {
-                    TextView banner_title = (TextView) findViewById(R.id.main_banner_title);
-
-                    String title = sub_banner_data.get(0);
-                    banner_title.setText(title);
+                    title = sub_banner_data.get(0);
                 }catch (Exception e) {
                     Log.e("BANNER_BIND_TITLE","failed");
                 }
+                banner_title.setText(title);
+
+
             }
         });
     }
@@ -922,7 +897,6 @@ implements NavigationView.OnNavigationItemSelectedListener{
     }
 
     public void sort_posts_recycler() {
-//        RelativeLayout content_main = (RelativeLayout) findViewById(R.id.content_main);
         NestedScrollView content_main = (NestedScrollView) findViewById(R.id.content_main);
         LayoutInflater layoutInflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View customView = layoutInflater.inflate(R.layout.sort_popup,null);
@@ -974,6 +948,8 @@ implements NavigationView.OnNavigationItemSelectedListener{
                     frag_recycler.sort_by = selected_text;
                     Spinner spinner = (Spinner) findViewById(R.id.sub_spinner);
                     frag_recycler.to_fragment_get_posts_from_sub_action(spinner.getSelectedItem().toString());
+                    TextView txt_sort_title = (TextView) findViewById(R.id.txt_sort_title);
+                    txt_sort_title.setText(selected_text);
                 }
                 sort_popup.dismiss();
             }

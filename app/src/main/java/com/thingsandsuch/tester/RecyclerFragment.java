@@ -1,8 +1,5 @@
 package com.thingsandsuch.tester;
 
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.app.Fragment;
 
@@ -17,7 +14,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
-import android.widget.Spinner;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,8 +48,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rec_view = inflater.inflate(R.layout.recycler_fragment, container, false);
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-
 
         // list setup
         rec_view_posts = (RecyclerView) rec_view.findViewById(R.id.rec_view_posts );
@@ -93,12 +87,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     public void onResume() {
         super.onResume();
         Log.d("RESUME", "recycler");
-
-//        AppBarLayout app_bar = (AppBarLayout) (getActivity()).findViewById(R.id.main_app_bar);
-//        CollapsingToolbarLayout coll_tool_bar = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
-//        app_bar.setVisibility(View.VISIBLE);
-//        coll_tool_bar.setVisibility(View.VISIBLE);
-
 
     }
 
@@ -263,9 +251,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
                 String score = subs_obj.getJSONObject(i).getJSONObject("data").getString("score");
                 String up_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("ups");
-                String down_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("downs");
-
-
+//                String down_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("downs");
 
                 JSONObject images = preview.getJSONArray("images").getJSONObject(0);
                 String source_url = images.getJSONObject("source").getString("url");
@@ -296,7 +282,6 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 data_list.add(score);
                 data_list.add(source_url);
                 data_list.add(up_votes);
-                data_list.add(down_votes);
 
                 list_post_data.add(data_list);
 

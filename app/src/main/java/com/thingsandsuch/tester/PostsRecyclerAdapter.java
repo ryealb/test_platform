@@ -50,8 +50,9 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 String title = p_data.get(0).toString();
                 String author = p_data.get(1).toString();
                 String hd_url = p_data.get(2).toString();
-                String upvote = p_data.get(3).toString();
+                String score = p_data.get(3).toString();
                 String preview_url = p_data.get(4).toString();
+                String upvote = p_data.get(5).toString();
 
                 ((MainActivity) v.getContext()).run_post_fragment(title, author, hd_url, upvote, preview_url);
 

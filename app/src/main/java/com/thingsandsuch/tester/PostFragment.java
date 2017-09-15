@@ -8,16 +8,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,19 +33,10 @@ public class PostFragment extends Fragment {
         final View post_view = inflater.inflate(R.layout.post_fragment, container, false);
         Bundle bundle = this.getArguments();
 
-//        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-
-//        CollapsingToolbarLayout toolbar_layout = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
-//        toolbar_layout.setVisibility(View.GONE);
-
-//        AppBarLayout app_bar = (AppBarLayout) (getActivity()).findViewById(R.id.app_bar);
-//        app_bar.setVisibility(View.GONE);
-
         if (bundle != null) {
             String title = bundle.getString("title", "");
             String author = bundle.getString("author");
-            String score = bundle.getString("upvote");
+            String upvote = bundle.getString("upvote");
             String preview_url = bundle.getString("preview_url");
             final String hd_url = bundle.getString("hd_url");
 
@@ -92,8 +79,8 @@ public class PostFragment extends Fragment {
             lbl_author.setText(disp_author);
 
             // VOTES
-            TextView txt_score = (TextView) post_view.findViewById(R.id.post_info_upvote);
-            txt_score.setText(score);
+            TextView txt_upvote = (TextView) post_view.findViewById(R.id.post_info_upvote);
+            txt_upvote.setText(upvote);
 
             // SET WALL BUTTON
             FloatingActionButton btn_set_wall  = (FloatingActionButton) post_view.findViewById(R.id.btn_set_wall);
@@ -162,32 +149,16 @@ public class PostFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-
-//        AppBarLayout app_bar = (AppBarLayout) (getActivity()).findViewById(R.id.main_app_bar);
-//        CollapsingToolbarLayout coll_tool_bar = (CollapsingToolbarLayout) (getActivity()).findViewById(R.id.main_toolbar_layout);
-//        app_bar.setVisibility(View.GONE);
-//        coll_tool_bar.setVisibility(View.GONE);
-
-
         AppBarLayout app_bar_layout = (AppBarLayout) (getActivity().findViewById(R.id.main_app_bar));
 
         if (app_bar_layout != null) {
             app_bar_layout.setExpanded(false, true);
-//            app_bar_layout.setVisibility(View.INVISIBLE);
         }
-
 
     }
 
 
     public File save_temp_bitmap(Bitmap bmp) {
-//        String root=getApplicationContext().getDir("my_sub_dir", Context.MODE_PRIVATE).getAbsolutePath();
-//        File myDir = new File(root + "/Img");
-//        if(!myDir.exists()){
-//            myDir.mkdirs();
-//        }
-
         String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
         Log.d("FILE",extStorageDirectory);
         OutputStream outStream = null;
