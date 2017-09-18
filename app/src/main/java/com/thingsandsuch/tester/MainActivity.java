@@ -876,7 +876,7 @@ implements NavigationView.OnNavigationItemSelectedListener{
 
 
     // FRAGMENTS
-    public void run_post_fragment(String title, String author, String hd_url, String upvote, String preview_url){
+    public void run_post_fragment(String title, String author, String hd_url, String upvote, String preview_url, String sub_name, String post_id){
 
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
@@ -884,6 +884,9 @@ implements NavigationView.OnNavigationItemSelectedListener{
         bundle.putString("hd_url", hd_url);
         bundle.putString("upvote", upvote);
         bundle.putString("preview_url", preview_url);
+
+        bundle.putString("sub_name", sub_name);
+        bundle.putString("post_id", post_id);
 
         frag_post = new PostFragment();
         frag_post.setArguments(bundle);

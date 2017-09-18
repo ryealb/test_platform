@@ -167,6 +167,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     // POSTS
     public void get_posts_from_sub(final String sub_name, final Boolean add_to_list){
         String get_url = "https://www.reddit.com/r/" + sub_name + "/" + sort_by + ".json?limit=25&raw_json=1";
+//        String get_url = "https://www.reddit.com/r/" + sub_name + "/" + sort_by + ".json?limit=100&raw_json=1";
 
         if (add_to_list){
             get_url += "&after=" + last_post_id;
@@ -253,10 +254,12 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 String up_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("ups");
 //                String down_votes = subs_obj.getJSONObject(i).getJSONObject("data").getString("downs");
 
+                String post_id = subs_obj.getJSONObject(i).getJSONObject("data").getString("id");
+
+
                 JSONObject images = preview.getJSONArray("images").getJSONObject(0);
                 String source_url = images.getJSONObject("source").getString("url");
                 JSONArray resolutions = images.getJSONArray("resolutions");
-
 
                 try{
                     source_url = resolutions.getJSONObject(3).getString("url");
@@ -282,6 +285,8 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 data_list.add(score);
                 data_list.add(source_url);
                 data_list.add(up_votes);
+                data_list.add(sub_name);
+                data_list.add(post_id);
 
                 list_post_data.add(data_list);
 

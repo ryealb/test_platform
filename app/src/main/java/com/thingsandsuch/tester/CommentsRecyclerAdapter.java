@@ -1,20 +1,19 @@
 package com.thingsandsuch.tester;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import android.content.Context;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ryan on 5/20/2017.
@@ -22,65 +21,45 @@ import com.bumptech.glide.Glide;
 
 
 
-public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CommentsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     protected boolean showLoader = true;
-    private ArrayList<List<String>> post_data;
+    private ArrayList<List<String>> comment_data;
     private static final int VIEWTYPE_ITEM = 1;
     private static final int VIEWTYPE_LOADER = 2;
 
 
-    public static class PreviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private ImageView img_view_preview;
-        private TextView background_text;
-        private List p_data;
+    public static class CommentHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView txt_comment;
+        private TextView txt_author;
+        private List c_data;
 
 
-        public PreviewHolder(View v) {
+        public CommentHolder(View v) {
             super(v);
-            img_view_preview = (ImageView) v.findViewById(R.id.img_view_preview);
-//            background_text = (TextView) v.findViewById(R.id.background);
-
+            txt_comment = (TextView) v.findViewById(R.id.txt_comment);
+            txt_author = (TextView) v.findViewById(R.id.txt_author);
             v.setOnClickListener(this);
-
         }
 
         @Override
         public void onClick(View v) {
-            try{
-                String title = p_data.get(0).toString();
-                String author = p_data.get(1).toString();
-                String hd_url = p_data.get(2).toString();
-                String score = p_data.get(3).toString();
-                String preview_url = p_data.get(4).toString();
-                String upvote = p_data.get(5).toString();
-
-                String sub_name = p_data.get(6).toString();
-                String post_id = p_data.get(7).toString();
-
-                ((MainActivity) v.getContext()).run_post_fragment(title, author, hd_url, upvote, preview_url, sub_name, post_id);
-
-            }catch (NullPointerException e){
-                Log.d("CLICK","BROKE"+e.toString());
-                Log.d("CLICK", p_data.toString());
-
-            }
         }
 
         public void bind_data(List<String> data) {
-            p_data = data;
+            c_data = data;
             try{
-                Context context = itemView.getContext();
-                String url = p_data.get(4).toString();
-                Glide.with(context)
-                        .load(url)
-                        .into(img_view_preview);
+                String comment = c_data.get(0).toString();
+
+                String author = "  - ";
+                author += c_data.get(1).toString();
+
+                txt_comment.setText(comment);
+                txt_author.setText(author);
 
             }catch (Exception e) {
-                Log.e("set_preview","FAILED");
+                Log.d("COMMENT","setText");
             }
-
         }
-
 
         }
 
@@ -95,8 +74,8 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
 
-    public PostsRecyclerAdapter(ArrayList<List<String>> data) {
-        post_data = data;
+    public CommentsRecyclerAdapter(ArrayList<List<String>> data) {
+        comment_data = data;
     }
 
     @Override
@@ -105,8 +84,8 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.loader_recycler_item, parent, false);
             return new LoaderHolder(inflatedView);
         }
-        View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.posts_recycler_item, parent, false);
-        return new PreviewHolder(inflatedView);
+        View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.comments_recycler_item, parent, false);
+        return new CommentHolder(inflatedView);
     }
 
 
@@ -123,16 +102,16 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
         }
 
-        if (holder instanceof  PreviewHolder) {
-            PreviewHolder preview_holder = (PreviewHolder)holder;
-            List<String> lst_data = post_data.get(position);
-            preview_holder.bind_data(lst_data);
+        if (holder instanceof  CommentHolder) {
+            CommentHolder comment_holder = (CommentHolder)holder;
+            List<String> lst_data = comment_data.get(position);
+            comment_holder.bind_data(lst_data);
         }
     }
 
     @Override
     public int getItemCount() {
-        return post_data.size();
+        return comment_data.size();
     }
 
     @Override

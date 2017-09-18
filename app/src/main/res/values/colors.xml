@@ -3,6 +3,7 @@
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="color_banner_shade">#3b3b3b</color>
+    <color name="color_info_card_line">#181818</color>
     <color name="color_info_card">#212121</color>
     <color name="colorAccent">#0089e9</color>
     <color name="colorText">#F5F5F5</color>
