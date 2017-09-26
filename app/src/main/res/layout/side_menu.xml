@@ -44,6 +44,13 @@
 
         </LinearLayout>
 
+        <Switch
+            android:id="@+id/swc_nsfw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorText"
+            android:text="NSFW"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

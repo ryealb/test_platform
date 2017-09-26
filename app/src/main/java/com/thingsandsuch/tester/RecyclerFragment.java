@@ -14,6 +14,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.Switch;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Request;
@@ -41,6 +43,8 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
     private RecyclerView rec_view_posts;
     private SwipeRefreshLayout lyt_refresh_swipe;
     private PostsRecyclerAdapter rec_adapter_posts;
+
+    private Switch swc_nsfw;
 
     ArrayList<List<String>> list_post_data = new ArrayList<List<String>>();
 
@@ -71,6 +75,11 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 }
             });
 
+
+        // nsfw switch
+        View sett_view = inflater.inflate(R.layout.side_menu, container, false);
+        swc_nsfw = (Switch) sett_view.findViewById(R.id.swc_nsfw);
+        //TODO: add listener to refresh on change
 
         return rec_view;
 
@@ -194,6 +203,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
                 JSONArray posts_json_obj = null;
                 try {
                     data = new JSONObject(json);
+
                 } catch (JSONException e) {
                     Log.e("POST_get_data", "object");
                 }
@@ -238,6 +248,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         Integer posts_count = subs_obj.length();
         Log.d("POPULATE_SUBS_obj_cnt", Integer.toString(posts_count));
 
+        Boolean show_nsfw = swc_nsfw.isChecked();
 
         Integer num = 0;
         if (add_to_list){
@@ -246,6 +257,14 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
         for (int i = 0; i < subs_obj.length(); i++)
         {
             try {
+                if (!show_nsfw){
+                    String nsfw = subs_obj.getJSONObject(i).getJSONObject("data").getString("over_18");
+                    if(Objects.equals(nsfw, "true")) {
+                        continue;
+                    }
+                }
+
+
                 JSONObject preview = subs_obj.getJSONObject(i).getJSONObject("data").getJSONObject("preview");
                 String author = subs_obj.getJSONObject(i).getJSONObject("data").getString("author");
                 String title = subs_obj.getJSONObject(i).getJSONObject("data").getString("title");
@@ -256,6 +275,7 @@ public class RecyclerFragment extends Fragment  implements FragmentCommunicator{
 
                 String post_id = subs_obj.getJSONObject(i).getJSONObject("data").getString("id");
 
+                Log.d("POST_DATA", subs_obj.getJSONObject(i).getJSONObject("data").toString());
 
                 JSONObject images = preview.getJSONArray("images").getJSONObject(0);
                 String source_url = images.getJSONObject("source").getString("url");
