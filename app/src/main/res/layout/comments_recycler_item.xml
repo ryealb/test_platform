@@ -12,6 +12,12 @@
 
     </LinearLayout>
 
+    <ExpandableListView
+        android:id="@+id/lst_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </ExpandableListView>
+
     <TextView
         android:id="@+id/txt_comment"
         android:gravity="top"
